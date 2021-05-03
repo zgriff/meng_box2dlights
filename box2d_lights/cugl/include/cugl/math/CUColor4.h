@@ -6,7 +6,7 @@
 //  float based color solution and a byte-based color solution.  The former
 //  is better for blending and calculations.  The later is better for storage.
 //
-//  Because math objects are i*ntended to be on the stack, we do not provide
+//  Because math objects are intended to be on the stack, we do not provide
 //  any shared pointer support in this class.
 //
 //  This module is based on an original file from GamePlay3D: http://gameplay3d.org.

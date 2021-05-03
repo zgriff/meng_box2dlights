@@ -3,6 +3,7 @@
 # CUGL static library
 #
 ###########################
+APP_SHORT_COMMANDS := true
 LOCAL_PATH := $(call my-dir)
 CUGL_PATH  := $(LOCAL_PATH)/../../..
 include $(CLEAR_VARS)
@@ -13,6 +14,7 @@ LOCAL_C_INCLUDES := $(CUGL_PATH)/include
 
 # Add your application source files here...
 LOCAL_SRC_FILES := \
+<<<<<<< HEAD
 	$(subst $(LOCAL_PATH)/,, \
 	$(wildcard $(CUGL_PATH)/lib/base/*.cpp) \
 	$(wildcard $(CUGL_PATH)/lib/base/platform/*.cpp) \
@@ -33,18 +35,56 @@ LOCAL_SRC_FILES := \
 	$(wildcard $(CUGL_PATH)/lib/scene2/graph/*.cpp) \
 	$(wildcard $(CUGL_PATH)/lib/scene2/ui/*.cpp) \
 	$(wildcard $(CUGL_PATH)/lib/scene2/layout/*.cpp) \
+	$(wildcard $(CUGL_PATH)/lib/net/*.cpp) \
 	$(wildcard $(CUGL_PATH)/lib/physics2/*.cpp) \
 	$(wildcard $(CUGL_PATH)/external/cJSON/*.c) \
 	$(wildcard $(CUGL_PATH)/external/poly2tri/common/*.cc) \
 	$(wildcard $(CUGL_PATH)/external/poly2tri/sweep/*.cc) \
 	$(wildcard $(CUGL_PATH)/external/clipper/*.cpp) \
-	$(wildcard $(CUGL_PATH)/external/box2d/lib/Box2D/Collision/*.cpp) \
-	$(wildcard $(CUGL_PATH)/external/box2d/lib/Box2D/Collision/Shapes/*.cpp) \
-	$(wildcard $(CUGL_PATH)/external/box2d/lib/Box2D/Common/*.cpp) \
-	$(wildcard $(CUGL_PATH)/external/box2d/lib/Box2D/Dynamics/*.cpp) \
-	$(wildcard $(CUGL_PATH)/external/box2d/lib/Box2D/Dynamics/Contacts/*.cpp) \
-	$(wildcard $(CUGL_PATH)/external/box2d/lib/Box2D/Dynamics/Joints/*.cpp) \
-	$(wildcard $(CUGL_PATH)/external/box2d/lib/Box2D/Rope/*.cpp))
+	$(wildcard $(CUGL_PATH)/external/Box2D/Collision/*.cpp) \
+	$(wildcard $(CUGL_PATH)/external/Box2D/Collision/Shapes/*.cpp) \
+	$(wildcard $(CUGL_PATH)/external/Box2D/Common/*.cpp) \
+	$(wildcard $(CUGL_PATH)/external/Box2D/Dynamics/*.cpp) \
+	$(wildcard $(CUGL_PATH)/external/Box2D/Dynamics/Contacts/*.cpp) \
+	$(wildcard $(CUGL_PATH)/external/Box2D/Dynamics/Joints/*.cpp) \
+	$(wildcard $(CUGL_PATH)/external/Box2D/Rope/*.cpp) \
+	$(wildcard $(CUGL_PATH)/external/slikenet/Source/src/*.cpp))
+=======
+    $(subst $(LOCAL_PATH)/,, \
+    $(wildcard $(CUGL_PATH)/lib/base/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/base/platform/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/util/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/math/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/math/*.c) \
+    $(wildcard $(CUGL_PATH)/lib/math/polygon/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/math/dsp/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/input/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/input/gestures/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/io/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/render/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/audio/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/audio/codecs/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/audio/graph/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/assets/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/scene2/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/scene2/graph/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/scene2/ui/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/scene2/layout/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/net/*.cpp) \
+    $(wildcard $(CUGL_PATH)/lib/physics2/*.cpp) \
+    $(wildcard $(CUGL_PATH)/external/cJSON/*.c) \
+    $(wildcard $(CUGL_PATH)/external/poly2tri/common/*.cc) \
+    $(wildcard $(CUGL_PATH)/external/poly2tri/sweep/*.cc) \
+    $(wildcard $(CUGL_PATH)/external/clipper/*.cpp) \
+    $(wildcard $(CUGL_PATH)/external/Box2D/Collision/*.cpp) \
+    $(wildcard $(CUGL_PATH)/external/Box2D/Collision/Shapes/*.cpp) \
+    $(wildcard $(CUGL_PATH)/external/Box2D/Common/*.cpp) \
+    $(wildcard $(CUGL_PATH)/external/Box2D/Dynamics/*.cpp) \
+    $(wildcard $(CUGL_PATH)/external/Box2D/Dynamics/Contacts/*.cpp) \
+    $(wildcard $(CUGL_PATH)/external/Box2D/Dynamics/Joints/*.cpp) \
+    $(wildcard $(CUGL_PATH)/external/Box2D/Rope/*.cpp) \
+    $(wildcard $(CUGL_PATH)/external/slikenet/Source/src/*.cpp))
+>>>>>>> feature/movement_tuning
 
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES
 

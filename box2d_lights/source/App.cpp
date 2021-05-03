@@ -1,143 +1,116 @@
 //
 //  App.cpp
-//  Cornell University Game Library (CUGL)
+//  Roshamboogie
 //
-//  This is the implementation file for the custom application. This is the
-//  definition of your root (and in this case only) class.
+//  Created by Zach Griffin on 3/6/21.
+//  Copyright © 2021 Game Design Initiative at Cornell. All rights reserved.
 //
-//  CUGL zlib License:
-//      This software is provided 'as-is', without any express or implied
-//      warranty.  In no event will the authors be held liable for any damages
-//      arising from the use of this software.
-//
-//      Permission is granted to anyone to use this software for any purpose,
-//      including commercial applications, and to alter it and redistribute it
-//      freely, subject to the following restrictions:
-//
-//      1. The origin of this software must not be misrepresented; you must not
-//      claim that you wrote the original software. If you use this software
-//      in a product, an acknowledgment in the product documentation would be
-//      appreciated but is not required.
-//
-//      2. Altered source versions must be plainly marked as such, and must not
-//      be misrepresented as being the original software.
-//
-//      3. This notice may not be removed or altered from any source distribution.
-//
-//  Author: Walker White
-//  Version: 1/8/17
-//
-// Include the class header, which includes all of the CUGL classes
+
 #include "App.h"
-#include <cugl/base/CUBase.h>
-
-// Add support for simple random number generation
+#include "NetworkController.h"
+#include "MapConstants.h"
+#include "SoundController.h"
 #include <cstdlib>
-#include <ctime>
 
-// This keeps us from having to write cugl:: all the time
 using namespace cugl;
 
-// The number of frames before moving the logo to a new position
-#define TIME_STEP 60
-// This is adjusted by screen aspect ratio to get the height
-#define GAME_WIDTH 1024
 
-const std::string _vsource =
-#include "../assets/shaders/lightShader.vert"
-;
-const std::string _fsource =
-#include "../assets/shaders/lightShader.frag"
-;
+#pragma mark -
+#pragma mark Gameplay Control
 
+
+void App::onStartup() {
+    srand((unsigned) time(0));
+    _assets = AssetManager::alloc();
+    _batch  = SpriteBatch::alloc();
+    auto cam = OrthographicCamera::alloc(getDisplaySize());
+
+    // Start-up basic input
+#ifdef CU_MOBILE
+    Input::activate<Touchscreen>();
+    Input::activate<Accelerometer>();
+    Input::activate<Keyboard>();
+#else
+    Input::activate<Mouse>();
+    Input::get<Mouse>()->setPointerAwareness(Mouse::PointerAwareness::DRAG);
+    Input::activate<Keyboard>();
+#endif
+
+    _assets->attach<Font>(FontLoader::alloc()->getHook());
+    _assets->attach<Texture>(TextureLoader::alloc()->getHook());
+    _assets->attach<Sound>(SoundLoader::alloc()->getHook());
+    _assets->attach<scene2::SceneNode>(Scene2Loader::alloc()->getHook());
+    _assets->attach<World>(GenericLoader<World>::alloc()->getHook());
+
+    // Create a "loading" screen
+    _currentScene = SceneSelect::Loading;
+    _loading.init(_assets);
+
+    // Queue up the other assets
+    _assets->loadDirectoryAsync("json/assets.json",nullptr);
+    _assets->loadAsync<World>(GRASS_MAP_KEY,GRASS_MAP_JSON,nullptr);
+    _assets->loadAsync<World>(GRASS_MAP2_KEY, GRASS_MAP2_JSON, nullptr);
+    _assets->loadAsync<World>(GRASS_MAP3_KEY, GRASS_MAP3_JSON, nullptr);
+    _assets->loadAsync<World>(GRASS_MAP4_KEY, GRASS_MAP4_JSON, nullptr);
+
+    AudioEngine::start();
+    SoundController::init(_assets);
+
+    Application::onStartup(); // YOU MUST END with call to parent
+}
+
+
+void App::onShutdown() {
+    _loading.dispose();
+    _menu.dispose();
+    _gameplay.dispose();
+    _results.dispose();
+    _lobby.dispose();
+    _assets = nullptr;
+    _batch = nullptr;
+
+    // Shutdown input
+#ifdef CU_MOBILE
+    Input::deactivate<Touchscreen>();
+    Input::deactivate<Accelerometer>();
+    Input::deactivate<Keyboard>();
+#else
+    Input::deactivate<Mouse>();
+    Input::deactivate<Keyboard>();
+#endif
+
+    AudioEngine::stop();
+    Application::onShutdown();
+}
 
 
 /**
- * The method called after OpenGL is initialized, but before running the application.
+ * The method called when the application is suspended and put in the background.
  *
- * This is the method in which all user-defined program intialization should
- * take place.  You should not create a new init() method.
+ * When this method is called, you should store any state that you do not
+ * want to be lost.  There is no guarantee that an application will return
+ * from the background; it may be terminated instead.
  *
- * When overriding this method, you should call the parent method as the
- * very last line.  This ensures that the state will transition to FOREGROUND,
- * causing the application to run.
+ * If you are using audio, it is critical that you pause it on suspension.
+ * Otherwise, the audio thread may persist while the application is in
+ * the background.
  */
-void App::onStartup() {
-    Size size = getDisplaySize();
-    size *= GAME_WIDTH/size.width;
-    
-    buildShader();
-    
-    // Create a scene graph the same size as the window
-    _scene = Scene2::alloc(size.width, size.height);
-    
-    // Create a sprite batch (and background color) to render the scene
-    _batch = SpriteBatch::alloc();
-    _shaderBatch = SpriteBatch::alloc(_shader);
-    setClearColor(Color4(229,229,229,255));
-    
-    // Create an asset manager to load all assets
-    _assets = AssetManager::alloc();
-    
-    // You have to attach the individual loaders for each asset type
-    _assets->attach<Texture>(TextureLoader::alloc()->getHook());
-    _assets->attach<Font>(FontLoader::alloc()->getHook());
-    
-    // This reads the given JSON file and uses it to load all other assets
-    _assets->loadDirectory("json/assets.json");
-
-    // Activate mouse or touch screen input as appropriate
-    // We have to do this BEFORE the scene, because the scene has a button
-#if defined (CU_TOUCH_SCREEN)
-    Input::activate<Touchscreen>();
-#else
-    Input::activate<Mouse>();
-#endif
-    
-    // Build the scene from these assets
-    buildScene();
-    Application::onStartup();
-    
-    // Report the safe area
-    Rect bounds = Display::get()->getSafeBounds();
-    CULog("Safe Area %sx%s",bounds.origin.toString().c_str(),
-                            bounds.size.toString().c_str());
-
-    bounds = getSafeBounds();
-    CULog("Safe Area %sx%s",bounds.origin.toString().c_str(),
-                            bounds.size.toString().c_str());
-
-    bounds = getDisplayBounds();
-    CULog("Full Area %sx%s",bounds.origin.toString().c_str(),
-                            bounds.size.toString().c_str());
-
+void App::onSuspend() {
+    AudioEngine::get()->pause();
 }
 
 /**
- * The method called when the application is ready to quit.
+ * The method called when the application resumes and put in the foreground.
  *
- * This is the method to dispose of all resources allocated by this
- * application.  As a rule of thumb, everything created in onStartup()
- * should be deleted here.
+ * If you saved any state before going into the background, now is the time
+ * to restore it. This guarantees that the application looks the same as
+ * when it was suspended.
  *
- * When overriding this method, you should call the parent method as the
- * very last line.  This ensures that the state will transition to NONE,
- * causing the application to be deleted.
+ * If you are using audio, you should use this method to resume any audio
+ * paused before app suspension.
  */
-void App::onShutdown() {
-    // Delete all smart pointers
-    _logo = nullptr;
-    _scene = nullptr;
-    _batch = nullptr;
-    _assets = nullptr;
-    
-    // Deativate input
-#if defined CU_TOUCH_SCREEN
-    Input::deactivate<Touchscreen>();
-#else
-    Input::deactivate<Mouse>();
-#endif
-    Application::onShutdown();
+void App::onResume() {
+    AudioEngine::get()->resume();
 }
 
 /**
@@ -151,19 +124,91 @@ void App::onShutdown() {
  *
  * @param timestep  The amount of time (in seconds) since the last frame
  */
-void App::update(float timestep) {
-    if (_countdown == 0) {
-        // Move the logo about the screen
-        Size size = getDisplaySize();
-        size *= GAME_WIDTH/size.width;
-		float x = (float)(std::rand() % (int)(size.width/2))+size.width/4;
-		float y = (float)(std::rand() % (int)(size.height/2))+size.height/8;
-        _logo->setPosition(Vec2(x,y));
-        _countdown = TIME_STEP;
-    } else {
-        _countdown--;
-    }
-}
+ void App::update(float timestep) {
+     switch (_currentScene) {
+         case SceneSelect::Loading:{
+             if (_loading.isActive()) {
+                 _loading.update(0.01f);
+             } else {
+                 _loading.dispose(); // Disables the input listeners in this mode
+                 _menu.init(_assets);
+                 _currentScene = SceneSelect::Menu;
+                 _menu.setActive(true);
+             }
+             break;
+         }
+         case SceneSelect::Menu:{
+             if (_menu.isActive()) {
+ //                _menu.update(0.01f);
+                 NetworkController::step();
+ //                CULog("menu scene");
+                 if((_menu.createPressed() || _menu.joinPressed()) && NetworkController::getStatus() == cugl::CUNetworkConnection::NetStatus::Connected){
+                     _menu.setActive(false);
+                     _lobby.init(_assets);
+                     _lobby.setActive(true);
+                     //NetworkController::setLobbyScene(_lobby);
+                     _menu.dispose();
+                     _currentScene = SceneSelect::Lobby;
+                 }
+             } else {
+                 _menu.setActive(false);
+                 _lobby.init(_assets);
+                 _lobby.setActive(true);
+                 _menu.dispose();
+                 _currentScene = SceneSelect::Lobby;
+             }
+             break;
+         }
+         case SceneSelect::Lobby:{
+             if (_lobby.isActive()) {
+                 _lobby.update(0.01f);
+             } else {
+                 _lobby.setActive(false);
+                 _gameplay.init(_assets, _lobby.getSelectedMap());
+                 _gameplay.setActive(true);
+                 _gameplay.setMovementStyle(0);
+                 startTimer = time(NULL);
+                 _lobby.dispose();
+                 _currentScene = SceneSelect::Game;
+             }
+             break;
+         }
+         case SceneSelect::Game:{
+             _gameplay.update(timestep);
+             if (time(NULL) - startTimer >= gameTimer) {
+                 _results.init(_assets, _gameplay.getResults(), _gameplay.getWinner());
+                 _gameplay.dispose();
+ //                _gameplay.reset();
+                 _currentScene = SceneSelect::Results;
+             }
+             break;
+         }
+         case SceneSelect::Results: {
+             if (_results.playAgain()) {
+                 _results.dispose();
+                 _lobby.init(_assets);
+                 _lobby.setActive(true);
+                 _lobby.setPlayAgain(true);
+                 _currentScene = SceneSelect::Lobby;
+             }
+             else if (_results.mainMenu()) {
+                 _results.dispose();
+                 _menu.init(_assets);
+                 _currentScene = SceneSelect::Menu;
+                 _menu.setActive(true);
+
+             }
+ //            else {
+ //                _results.dispose();
+ //                _gameplay.dispose();
+ //            }
+ //            _results.update(timestep);
+             break;
+         }
+         default:
+             break;
+     }
+ }
 
 /**
  * The method called to draw the application to the screen.
@@ -175,79 +220,22 @@ void App::update(float timestep) {
  * at all. The default implmentation does nothing.
  */
 void App::draw() {
-    // This takes care of begin/end
-    _scene->render(_batch);
-}
+    switch (_currentScene) {
+        case SceneSelect::Loading:
+            _loading.render(_batch);
+            break;
+        case SceneSelect::Menu:
+            _menu.render(_batch);
+            break;
+        case SceneSelect::Results:
+            _results.render(_batch);
+            break;
+        case SceneSelect::Lobby:
+            _lobby.render(_batch);
+            break;
+        default:
+            _gameplay.render(_batch);
+            break;
+    }
 
-/**
- * Internal helper to build the scene graph.
- *
- * Scene graphs are not required.  You could manage all scenes just like
- * you do in 3152.  However, they greatly simplify scene management, and
- * have become standard in most game engines.
- */
-void App::buildScene() {
-    Size  size  = getDisplaySize();
-    float scale = GAME_WIDTH/size.width;
-    size *= scale;
-    
-    // The logo is actually an image+label.  We need a parent node
-    _logo = scene2::SceneNode::alloc();
-    
-    // Get the image and add it to the node.
-    std::shared_ptr<Texture> texture  = _assets->get<Texture>("logo");
-    _logo = scene2::PolygonNode::allocWithTexture(texture);
-    _logo->setScale(0.2f); // Magic number to rescale asset
-
-    // Put the logo in the middle of the screen
-    _logo->setAnchor(Vec2::ANCHOR_CENTER);
-    _logo->setPosition(size.width/2,size.height/2);
-
-    
-    // Create a button.  A button has an up image and a down image
-    std::shared_ptr<Texture> up   = _assets->get<Texture>("close-normal");
-    std::shared_ptr<Texture> down = _assets->get<Texture>("close-selected");
-    
-    Size bsize = up->getSize();
-    std::shared_ptr<scene2::Button> button = scene2::Button::alloc(scene2::PolygonNode::allocWithTexture(up),
-                                                                   scene2::PolygonNode::allocWithTexture(down));
-    
-    // Create a callback function for the button
-    button->setName("close");
-    button->addListener([=] (const std::string& name, bool down) {
-        // Only quit when the button is released
-        if (!down) {
-            CULog("Goodbye!");
-            this->quit();
-        }
-    });
-    
-    // Find the safe area, adapting to the iPhone X
-    Rect safe = getSafeBounds();
-    safe.origin *= scale;
-    safe.size   *= scale;
-    
-    // Get the right and bottom offsets.
-    float bOffset = safe.origin.y;
-    float rOffset = (size.width)-(safe.origin.x+safe.size.width);
-
-    // Position the button in the bottom right corner
-    button->setAnchor(Vec2::ANCHOR_CENTER);
-    button->setPosition(size.width-(bsize.width+rOffset)/2,(bsize.height+bOffset)/2);
-    
-    // Add the logo and button to the scene graph
-    _scene->addChild(_logo);
-    _scene->addChild(button);
-    
-    // We can only activate a button AFTER it is added to a scene
-    button->activate();
-
-    // Start the logo countdown and C-style random number generator
-    _countdown = TIME_STEP;
-    std::srand((int)std::time(0));
-}
-
-
-void App::buildShader() {
-    _shader = Shader::alloc(SHADER(_vsource), SHADER(_fsource));
 }

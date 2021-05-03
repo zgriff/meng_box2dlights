@@ -1,72 +1,53 @@
 //
-//  App.h
-//  Cornell University Game Library (CUGL)
+//  App.hpp
+//  Roshamboogie
 //
-//  This is the header for the custom application.  It is necessary so that
-//  main.cpp can access your custom class.
+//  Created by Zach Griffin on 3/6/21.
+//  Copyright © 2021 Game Design Initiative at Cornell. All rights reserved.
 //
-//  CUGL zlib License:
-//      This software is provided 'as-is', without any express or implied
-//      warranty.  In no event will the authors be held liable for any damages
-//      arising from the use of this software.
-//
-//      Permission is granted to anyone to use this software for any purpose,
-//      including commercial applications, and to alter it and redistribute it
-//      freely, subject to the following restrictions:
-//
-//      1. The origin of this software must not be misrepresented; you must not
-//      claim that you wrote the original software. If you use this software
-//      in a product, an acknowledgment in the product documentation would be
-//      appreciated but is not required.
-//
-//      2. Altered source versions must be plainly marked as such, and must not
-//      be misrepresented as being the original software.
-//
-//      3. This notice may not be removed or altered from any source distribution.
-//
-//  Author: Walker White
-//  Version: 1/8/17
-//
-#ifndef __HELLO_APP_H__
-#define __HELLO_APP_H__
+
+#ifndef __APP_H__
+#define __APP_H__
 #include <cugl/cugl.h>
+#include "GameScene.h"
+#include "LoadingScene.h"
+#include "MenuScene.h"
+#include "EndScene.h"
+#include "LobbyScene.h"
+#include "Globals.h"
 
 /**
- * Class for a simple Hello World style application
- *
- * The application simply moves the CUGL logo across the screen.  It also
- * provides a button to quit the application.
+ * This class represents the application root for the project.
  */
-class App : public cugl::Application {
+class App :  public cugl::Application {
 protected:
-    /** The loaders to (synchronously) load in assets */
+    /** The global sprite batch for drawing (only want one of these) */
+    std::shared_ptr<cugl::SpriteBatch> _batch;
+    /** The global asset manager */
     std::shared_ptr<cugl::AssetManager> _assets;
-    
-    std::shared_ptr<cugl::Shader> _shader;
 
-    /** A scene graph, used to display our 2D scenes */
-    std::shared_ptr<cugl::Scene2> _scene;
-    /** A 3152 style SpriteBatch to render the scene */
-    std::shared_ptr<cugl::SpriteBatch>  _batch;
-    
-    std::shared_ptr<cugl::SpriteBatch>  _shaderBatch;
-    
-    /** A reference to the logo, so that we can move it around */
-    std::shared_ptr<cugl::scene2::SceneNode>  _logo;
+    // Player modes
+    /** The primary controller for the game world */
+    GameScene _gameplay;
+    /** The controller for the loading screen */
+    LoadingScene _loading;
+    /** The controller for the main menu  */
+    MenuScene _menu;
+    /** The controller for the player lobby  */
+    LobbyScene _lobby;
+    /** The controller for the ending results screen  */
+    EndScene _results;
 
-    /** A countdown used to move the logo */
-    int  _countdown;
+    /** Whether or not we have finished loading all assets */
+    enum class SceneSelect {
+        Loading, Menu, Game, Lobby, Results
+    };
     
-    /** 
-     * Internal helper to build the scene graph.
-     *
-     * Scene graphs are not required.  You could manage all scenes just like
-     * you do in 3152.  However, they greatly simplify scene management, and
-     * have become standard in most game engines.
-     */
-    void buildScene();
     
-    void buildShader();
+    time_t gameTimer = globals::GAME_TIMER;
+    time_t startTimer;
+    
+    SceneSelect _currentScene;
     
 public:
     /**
@@ -78,17 +59,18 @@ public:
      * of initialization from the constructor allows main.cpp to perform
      * advanced configuration of the application before it starts.
      */
-    App() : Application(), _countdown(-1) {}
+    App() : cugl::Application() {}
     
     /**
      * Disposes of this application, releasing all resources.
      *
-     * This destructor is called by main.cpp when the application quits. 
+     * This destructor is called by main.cpp when the application quits.
      * It simply calls the dispose() method in Application.  There is nothing
      * special to do here.
      */
     ~App() { }
     
+#pragma mark Application State
     /**
      * The method called after OpenGL is initialized, but before running the application.
      *
@@ -100,7 +82,7 @@ public:
      * causing the application to run.
      */
     virtual void onStartup() override;
-
+    
     /**
      * The method called when the application is ready to quit.
      *
@@ -113,7 +95,33 @@ public:
      * causing the application to be deleted.
      */
     virtual void onShutdown() override;
+ 
+    /**
+     * The method called when the application is suspended and put in the background.
+     *
+     * When this method is called, you should store any state that you do not
+     * want to be lost.  There is no guarantee that an application will return
+     * from the background; it may be terminated instead.
+     *
+     * If you are using audio, it is critical that you pause it on suspension.
+     * Otherwise, the audio thread may persist while the application is in
+     * the background.
+     */
+    virtual void onSuspend() override;
     
+    /**
+     * The method called when the application resumes and put in the foreground.
+     *
+     * If you saved any state before going into the background, now is the time
+     * to restore it. This guarantees that the application looks the same as
+     * when it was suspended.
+     *
+     * If you are using audio, you should use this method to resume any audio
+     * paused before app suspension.
+     */
+    virtual void onResume()  override;
+    
+#pragma mark Application Loop
     /**
      * The method called to update the application data.
      *
@@ -137,7 +145,9 @@ public:
      * at all. The default implmentation does nothing.
      */
     virtual void draw() override;
-    
 };
 
-#endif /* __HELLO_APP_H__ */
+
+
+
+#endif /* App_h */
