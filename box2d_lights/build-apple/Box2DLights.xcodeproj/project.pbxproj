@@ -46,9 +46,6 @@
 		92B7070026409DF700BF7819 /* EndScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706C826409DF600BF7819 /* EndScene.cpp */; };
 		92B7070126409DF700BF7819 /* EndScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706C826409DF600BF7819 /* EndScene.cpp */; };
 		92B7070226409DF700BF7819 /* EndScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706C826409DF600BF7819 /* EndScene.cpp */; };
-		92B7070326409DF700BF7819 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706CA26409DF600BF7819 /* main.cpp */; };
-		92B7070426409DF700BF7819 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706CA26409DF600BF7819 /* main.cpp */; };
-		92B7070526409DF700BF7819 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706CA26409DF600BF7819 /* main.cpp */; };
 		92B7070626409DF700BF7819 /* LobbyScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706D026409DF600BF7819 /* LobbyScene.cpp */; };
 		92B7070726409DF700BF7819 /* LobbyScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706D026409DF600BF7819 /* LobbyScene.cpp */; };
 		92B7070826409DF700BF7819 /* LobbyScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706D026409DF600BF7819 /* LobbyScene.cpp */; };
@@ -70,6 +67,27 @@
 		92B7071826409DF700BF7819 /* Booster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706DB26409DF700BF7819 /* Booster.cpp */; };
 		92B7071926409DF700BF7819 /* Booster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706DB26409DF700BF7819 /* Booster.cpp */; };
 		92B7071A26409DF700BF7819 /* Booster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706DB26409DF700BF7819 /* Booster.cpp */; };
+		92B7073A2640AB6A00BF7819 /* maps in Resources */ = {isa = PBXBuildFile; fileRef = 92B707372640AB6A00BF7819 /* maps */; };
+		92B7073B2640AB6A00BF7819 /* maps in Resources */ = {isa = PBXBuildFile; fileRef = 92B707372640AB6A00BF7819 /* maps */; };
+		92B7073C2640AB6A00BF7819 /* maps in Resources */ = {isa = PBXBuildFile; fileRef = 92B707372640AB6A00BF7819 /* maps */; };
+		92B7073D2640AB6A00BF7819 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 92B707382640AB6A00BF7819 /* sounds */; };
+		92B7073E2640AB6A00BF7819 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 92B707382640AB6A00BF7819 /* sounds */; };
+		92B7073F2640AB6A00BF7819 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 92B707382640AB6A00BF7819 /* sounds */; };
+		92B707402640AB6A00BF7819 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 92B707392640AB6A00BF7819 /* fonts */; };
+		92B707412640AB6A00BF7819 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 92B707392640AB6A00BF7819 /* fonts */; };
+		92B707422640AB6A00BF7819 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 92B707392640AB6A00BF7819 /* fonts */; };
+		92B707482640ABD100BF7819 /* Light.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B707462640ABD100BF7819 /* Light.cpp */; };
+		92B707492640ABD100BF7819 /* Light.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B707462640ABD100BF7819 /* Light.cpp */; };
+		92B7074A2640ABD100BF7819 /* Light.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B707462640ABD100BF7819 /* Light.cpp */; };
+		92B707532640AC2C00BF7819 /* PointLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B707512640AC2C00BF7819 /* PointLight.cpp */; };
+		92B707542640AC2C00BF7819 /* PointLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B707512640AC2C00BF7819 /* PointLight.cpp */; };
+		92B707552640AC2C00BF7819 /* PointLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B707512640AC2C00BF7819 /* PointLight.cpp */; };
+		92B7075B2640AC3B00BF7819 /* DirectionalLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B707592640AC3B00BF7819 /* DirectionalLight.cpp */; };
+		92B7075C2640AC3B00BF7819 /* DirectionalLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B707592640AC3B00BF7819 /* DirectionalLight.cpp */; };
+		92B7075D2640AC3B00BF7819 /* DirectionalLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B707592640AC3B00BF7819 /* DirectionalLight.cpp */; };
+		92B707762641E43500BF7819 /* RayHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B707742641E43500BF7819 /* RayHandler.cpp */; };
+		92B707772641E43500BF7819 /* RayHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B707742641E43500BF7819 /* RayHandler.cpp */; };
+		92B707782641E43500BF7819 /* RayHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B707742641E43500BF7819 /* RayHandler.cpp */; };
 		92B9BE782639EC0D005E845D /* shaders in Resources */ = {isa = PBXBuildFile; fileRef = 92B9BE742639EC0D005E845D /* shaders */; };
 		92B9BE792639EC0D005E845D /* shaders in Resources */ = {isa = PBXBuildFile; fileRef = 92B9BE742639EC0D005E845D /* shaders */; };
 		92B9BE7A2639EC0D005E845D /* shaders in Resources */ = {isa = PBXBuildFile; fileRef = 92B9BE742639EC0D005E845D /* shaders */; };
@@ -82,7 +100,6 @@
 		EB22BF9625D0EA50002ACE41 /* json in Resources */ = {isa = PBXBuildFile; fileRef = EBFE7C041E19B496001007C2 /* json */; };
 		EB22BF9725D0EA51002ACE41 /* textures in Resources */ = {isa = PBXBuildFile; fileRef = EB2BE9BA1D7498D2002FE78B /* textures */; };
 		EB22BF9B25D0EA5C002ACE41 /* DeviceMargins.plist in Resources */ = {isa = PBXBuildFile; fileRef = EB07CFB021EFF3EF000CB3A3 /* DeviceMargins.plist */; };
-		EB2BE9B51D74952A002FE78B /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE9B21D74952A002FE78B /* App.cpp */; };
 		EB2BE9B61D74952A002FE78B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE9B41D74952A002FE78B /* main.cpp */; };
 		EB2BE9BB1D7498D2002FE78B /* textures in Resources */ = {isa = PBXBuildFile; fileRef = EB2BE9BA1D7498D2002FE78B /* textures */; };
 		EB2BE9C11D749908002FE78B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB2BE9BE1D749908002FE78B /* Carbon.framework */; };
@@ -97,9 +114,7 @@
 		EB7454AC1D74D846002FBAE6 /* Landscape.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB7454A81D74D846002FBAE6 /* Landscape.storyboard */; };
 		EB7454AD1D74D846002FBAE6 /* Portrait.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB7454A91D74D846002FBAE6 /* Portrait.storyboard */; };
 		EB7454AE1D74D891002FBAE6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE9B41D74952A002FE78B /* main.cpp */; };
-		EB7454AF1D74D891002FBAE6 /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE9B21D74952A002FE78B /* App.cpp */; };
 		EB7454D01D750623002FBAE6 /* textures in Resources */ = {isa = PBXBuildFile; fileRef = EB2BE9BA1D7498D2002FE78B /* textures */; };
-		EB9CDA3525D0EAAC00EE1A09 /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE9B21D74952A002FE78B /* App.cpp */; };
 		EB9CDA3925D0EAB100EE1A09 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE9B41D74952A002FE78B /* main.cpp */; };
 		EB9CDA4625D0EB5A00EE1A09 /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDD16C225C35D3400154533 /* CoreHaptics.framework */; };
 		EB9CDA4725D0EB5A00EE1A09 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDD16C025C35D3400154533 /* CoreAudio.framework */; };
@@ -195,7 +210,6 @@
 		92B706C726409DF600BF7819 /* SpawnController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpawnController.h; sourceTree = "<group>"; };
 		92B706C826409DF600BF7819 /* EndScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EndScene.cpp; sourceTree = "<group>"; };
 		92B706C926409DF600BF7819 /* MenuScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuScene.h; sourceTree = "<group>"; };
-		92B706CA26409DF600BF7819 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		92B706CB26409DF600BF7819 /* AbilityController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbilityController.h; sourceTree = "<group>"; };
 		92B706CC26409DF600BF7819 /* SoundController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundController.h; sourceTree = "<group>"; };
 		92B706CD26409DF600BF7819 /* EndScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EndScene.h; sourceTree = "<group>"; };
@@ -213,11 +227,20 @@
 		92B706D926409DF700BF7819 /* SpawnController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpawnController.cpp; sourceTree = "<group>"; };
 		92B706DA26409DF700BF7819 /* Egg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Egg.h; sourceTree = "<group>"; };
 		92B706DB26409DF700BF7819 /* Booster.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Booster.cpp; sourceTree = "<group>"; };
+		92B707372640AB6A00BF7819 /* maps */ = {isa = PBXFileReference; lastKnownFileType = folder; name = maps; path = ../../../moosey_studios/MysticMayhem/assets/maps; sourceTree = "<group>"; };
+		92B707382640AB6A00BF7819 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = ../../../moosey_studios/MysticMayhem/assets/sounds; sourceTree = "<group>"; };
+		92B707392640AB6A00BF7819 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../../moosey_studios/MysticMayhem/assets/fonts; sourceTree = "<group>"; };
+		92B707462640ABD100BF7819 /* Light.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Light.cpp; sourceTree = "<group>"; };
+		92B707472640ABD100BF7819 /* Light.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Light.h; sourceTree = "<group>"; };
+		92B707512640AC2C00BF7819 /* PointLight.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PointLight.cpp; sourceTree = "<group>"; };
+		92B707522640AC2C00BF7819 /* PointLight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PointLight.h; sourceTree = "<group>"; };
+		92B707592640AC3B00BF7819 /* DirectionalLight.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DirectionalLight.cpp; sourceTree = "<group>"; };
+		92B7075A2640AC3B00BF7819 /* DirectionalLight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DirectionalLight.h; sourceTree = "<group>"; };
+		92B707742641E43500BF7819 /* RayHandler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RayHandler.cpp; sourceTree = "<group>"; };
+		92B707752641E43500BF7819 /* RayHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RayHandler.h; sourceTree = "<group>"; };
 		92B9BE742639EC0D005E845D /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
 		EB07CFB021EFF3EF000CB3A3 /* DeviceMargins.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = DeviceMargins.plist; sourceTree = "<group>"; };
 		EB22BF5E25D0E8BC002ACE41 /* Box2DLights (Sim).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Box2DLights (Sim).app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		EB2BE9B21D74952A002FE78B /* App.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = App.cpp; sourceTree = "<group>"; };
-		EB2BE9B31D74952A002FE78B /* App.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = App.h; sourceTree = "<group>"; };
 		EB2BE9B41D74952A002FE78B /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		EB2BE9BA1D7498D2002FE78B /* textures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = textures; sourceTree = "<group>"; };
 		EB2BE9BE1D749908002FE78B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
@@ -346,6 +369,9 @@
 		EB2BE9B71D749870002FE78B /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				92B707392640AB6A00BF7819 /* fonts */,
+				92B707372640AB6A00BF7819 /* maps */,
+				92B707382640AB6A00BF7819 /* sounds */,
 				92B9BE742639EC0D005E845D /* shaders */,
 				EBFE7C041E19B496001007C2 /* json */,
 				EB2BE9BA1D7498D2002FE78B /* textures */,
@@ -446,9 +472,7 @@
 			isa = PBXGroup;
 			children = (
 				EB2BE9B41D74952A002FE78B /* main.cpp */,
-				EB2BE9B31D74952A002FE78B /* App.h */,
 				92B706CB26409DF600BF7819 /* AbilityController.h */,
-				EB2BE9B21D74952A002FE78B /* App.cpp */,
 				92B706B826409DF400BF7819 /* AbilityController.cpp */,
 				92B706C526409DF600BF7819 /* App.cpp */,
 				92B706CE26409DF600BF7819 /* App.h */,
@@ -470,7 +494,6 @@
 				92B706BB26409DF400BF7819 /* LoadingScene.h */,
 				92B706D026409DF600BF7819 /* LobbyScene.cpp */,
 				92B706B026409DF400BF7819 /* LobbyScene.h */,
-				92B706CA26409DF600BF7819 /* main.cpp */,
 				92B706D326409DF600BF7819 /* MapConstants.h */,
 				92B706D426409DF600BF7819 /* MenuScene.cpp */,
 				92B706C926409DF600BF7819 /* MenuScene.h */,
@@ -493,6 +516,14 @@
 				92B706D626409DF600BF7819 /* SwapStation.h */,
 				92B706C026409DF500BF7819 /* World.cpp */,
 				92B706D826409DF700BF7819 /* World.h */,
+				92B707472640ABD100BF7819 /* Light.h */,
+				92B707462640ABD100BF7819 /* Light.cpp */,
+				92B707522640AC2C00BF7819 /* PointLight.h */,
+				92B707512640AC2C00BF7819 /* PointLight.cpp */,
+				92B7075A2640AC3B00BF7819 /* DirectionalLight.h */,
+				92B707592640AC3B00BF7819 /* DirectionalLight.cpp */,
+				92B707742641E43500BF7819 /* RayHandler.cpp */,
+				92B707752641E43500BF7819 /* RayHandler.h */,
 			);
 			name = Source;
 			path = ../source;
@@ -632,10 +663,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				92B9BE7A2639EC0D005E845D /* shaders in Resources */,
+				92B707422640AB6A00BF7819 /* fonts in Resources */,
 				EB22BF9B25D0EA5C002ACE41 /* DeviceMargins.plist in Resources */,
 				EB22BF9625D0EA50002ACE41 /* json in Resources */,
 				EB22BF9725D0EA51002ACE41 /* textures in Resources */,
 				EB22BF9025D0EA49002ACE41 /* iOS.xcassets in Resources */,
+				92B7073F2640AB6A00BF7819 /* sounds in Resources */,
+				92B7073C2640AB6A00BF7819 /* maps in Resources */,
 				EB22BF9125D0EA49002ACE41 /* Landscape.storyboard in Resources */,
 				EB22BF9225D0EA49002ACE41 /* Portrait.storyboard in Resources */,
 			);
@@ -646,10 +680,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				92B9BE792639EC0D005E845D /* shaders in Resources */,
+				92B707412640AB6A00BF7819 /* fonts in Resources */,
 				EB7454D01D750623002FBAE6 /* textures in Resources */,
 				EB7454AB1D74D846002FBAE6 /* iOS.xcassets in Resources */,
 				EB7454AC1D74D846002FBAE6 /* Landscape.storyboard in Resources */,
 				EBFE7C051E19B496001007C2 /* json in Resources */,
+				92B7073E2640AB6A00BF7819 /* sounds in Resources */,
+				92B7073B2640AB6A00BF7819 /* maps in Resources */,
 				EB7454AD1D74D846002FBAE6 /* Portrait.storyboard in Resources */,
 				EB07CFB621EFF3F8000CB3A3 /* DeviceMargins.plist in Resources */,
 			);
@@ -661,7 +698,10 @@
 			files = (
 				EBFE7C091E19B4AC001007C2 /* json in Resources */,
 				92B9BE782639EC0D005E845D /* shaders in Resources */,
+				92B7073D2640AB6A00BF7819 /* sounds in Resources */,
+				92B707402640AB6A00BF7819 /* fonts in Resources */,
 				EB2BE9BB1D7498D2002FE78B /* textures in Resources */,
+				92B7073A2640AB6A00BF7819 /* maps in Resources */,
 				EBBF189B1D74904A008E2001 /* Mac.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -681,18 +721,20 @@
 				92B706F926409DF700BF7819 /* World.cpp in Sources */,
 				92B706FF26409DF700BF7819 /* App.cpp in Sources */,
 				92B7070826409DF700BF7819 /* LobbyScene.cpp in Sources */,
-				92B7070526409DF700BF7819 /* main.cpp in Sources */,
 				92B706DE26409DF700BF7819 /* GameScene.cpp in Sources */,
 				92B706E726409DF700BF7819 /* CollisionController.cpp in Sources */,
 				92B7071726409DF700BF7819 /* SpawnController.cpp in Sources */,
-				EB9CDA3525D0EAAC00EE1A09 /* App.cpp in Sources */,
+				92B7075D2640AC3B00BF7819 /* DirectionalLight.cpp in Sources */,
 				92B7070226409DF700BF7819 /* EndScene.cpp in Sources */,
 				92B706F626409DF700BF7819 /* LoadingScene.cpp in Sources */,
 				92B7070E26409DF700BF7819 /* MenuScene.cpp in Sources */,
 				92B706ED26409DF700BF7819 /* AbilityController.cpp in Sources */,
 				92B706F026409DF700BF7819 /* SoundController.cpp in Sources */,
+				92B707782641E43500BF7819 /* RayHandler.cpp in Sources */,
+				92B7074A2640ABD100BF7819 /* Light.cpp in Sources */,
 				92B706EA26409DF700BF7819 /* Projectile.cpp in Sources */,
 				92B7071126409DF700BF7819 /* NetworkData.cpp in Sources */,
+				92B707552640AC2C00BF7819 /* PointLight.cpp in Sources */,
 				92B7070B26409DF700BF7819 /* InputController.cpp in Sources */,
 				92B706E426409DF700BF7819 /* Player.cpp in Sources */,
 				92B7071A26409DF700BF7819 /* Booster.cpp in Sources */,
@@ -711,18 +753,20 @@
 				92B706F826409DF700BF7819 /* World.cpp in Sources */,
 				92B706FE26409DF700BF7819 /* App.cpp in Sources */,
 				92B7070726409DF700BF7819 /* LobbyScene.cpp in Sources */,
-				92B7070426409DF700BF7819 /* main.cpp in Sources */,
 				92B706DD26409DF700BF7819 /* GameScene.cpp in Sources */,
 				92B706E626409DF700BF7819 /* CollisionController.cpp in Sources */,
 				92B7071626409DF700BF7819 /* SpawnController.cpp in Sources */,
-				EB7454AF1D74D891002FBAE6 /* App.cpp in Sources */,
+				92B7075C2640AC3B00BF7819 /* DirectionalLight.cpp in Sources */,
 				92B7070126409DF700BF7819 /* EndScene.cpp in Sources */,
 				92B706F526409DF700BF7819 /* LoadingScene.cpp in Sources */,
 				92B7070D26409DF700BF7819 /* MenuScene.cpp in Sources */,
 				92B706EC26409DF700BF7819 /* AbilityController.cpp in Sources */,
 				92B706EF26409DF700BF7819 /* SoundController.cpp in Sources */,
+				92B707772641E43500BF7819 /* RayHandler.cpp in Sources */,
+				92B707492640ABD100BF7819 /* Light.cpp in Sources */,
 				92B706E926409DF700BF7819 /* Projectile.cpp in Sources */,
 				92B7071026409DF700BF7819 /* NetworkData.cpp in Sources */,
+				92B707542640AC2C00BF7819 /* PointLight.cpp in Sources */,
 				92B7070A26409DF700BF7819 /* InputController.cpp in Sources */,
 				92B706E326409DF700BF7819 /* Player.cpp in Sources */,
 				92B7071926409DF700BF7819 /* Booster.cpp in Sources */,
@@ -741,18 +785,20 @@
 				92B706F726409DF700BF7819 /* World.cpp in Sources */,
 				92B706FD26409DF700BF7819 /* App.cpp in Sources */,
 				92B7070626409DF700BF7819 /* LobbyScene.cpp in Sources */,
-				92B7070326409DF700BF7819 /* main.cpp in Sources */,
 				92B706DC26409DF700BF7819 /* GameScene.cpp in Sources */,
 				92B706E526409DF700BF7819 /* CollisionController.cpp in Sources */,
 				92B7071526409DF700BF7819 /* SpawnController.cpp in Sources */,
-				EB2BE9B51D74952A002FE78B /* App.cpp in Sources */,
+				92B7075B2640AC3B00BF7819 /* DirectionalLight.cpp in Sources */,
 				92B7070026409DF700BF7819 /* EndScene.cpp in Sources */,
 				92B706F426409DF700BF7819 /* LoadingScene.cpp in Sources */,
 				92B7070C26409DF700BF7819 /* MenuScene.cpp in Sources */,
 				92B706EB26409DF700BF7819 /* AbilityController.cpp in Sources */,
 				92B706EE26409DF700BF7819 /* SoundController.cpp in Sources */,
+				92B707762641E43500BF7819 /* RayHandler.cpp in Sources */,
+				92B707482640ABD100BF7819 /* Light.cpp in Sources */,
 				92B706E826409DF700BF7819 /* Projectile.cpp in Sources */,
 				92B7070F26409DF700BF7819 /* NetworkData.cpp in Sources */,
+				92B707532640AC2C00BF7819 /* PointLight.cpp in Sources */,
 				92B7070926409DF700BF7819 /* InputController.cpp in Sources */,
 				92B706E226409DF700BF7819 /* Player.cpp in Sources */,
 				92B7071826409DF700BF7819 /* Booster.cpp in Sources */,
@@ -981,6 +1027,7 @@
 				DEVELOPMENT_TEAM = R8WZHX75X7;
 				INFOPLIST_FILE = "$(SRCROOT)/Resources/Mac-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = edu.cornell.gdiac.mac.zgriffin.box2d;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -996,6 +1043,7 @@
 				DEVELOPMENT_TEAM = R8WZHX75X7;
 				INFOPLIST_FILE = "$(SRCROOT)/Resources/Mac-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = edu.cornell.gdiac.mac.zgriffin.box2d;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

@@ -23,6 +23,10 @@ class App :  public cugl::Application {
 protected:
     /** The global sprite batch for drawing (only want one of these) */
     std::shared_ptr<cugl::SpriteBatch> _batch;
+    
+    std::shared_ptr<cugl::Shader> _shader;
+    
+    std::shared_ptr<cugl::SpriteBatch> _shaderBatch;
     /** The global asset manager */
     std::shared_ptr<cugl::AssetManager> _assets;
 

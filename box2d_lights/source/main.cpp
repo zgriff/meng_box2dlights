@@ -24,7 +24,7 @@ int main(int argc, char * argv[]) {
     App app;
     
     // Set the properties of your application
-    app.setName("Mystic Mayhem");
+    app.setName("Box2D Lights");
     app.setOrganization("Moosey Studios");
     app.setHighDPI(true);
     app.setFPS(60.0f);

@@ -14,6 +14,14 @@
 
 using namespace cugl;
 
+const std::string _vsource =
+#include "../assets/shaders/lightShader.vert"
+;
+const std::string _fsource =
+#include "../assets/shaders/lightShader.frag"
+;
+
+
 
 #pragma mark -
 #pragma mark Gameplay Control
@@ -21,8 +29,13 @@ using namespace cugl;
 
 void App::onStartup() {
     srand((unsigned) time(0));
+    
+    _shader = Shader::alloc(SHADER(_vsource),SHADER( _fsource));
+    _shaderBatch = SpriteBatch::alloc(_shader);
+    
     _assets = AssetManager::alloc();
     _batch  = SpriteBatch::alloc();
+    
     auto cam = OrthographicCamera::alloc(getDisplaySize());
 
     // Start-up basic input
@@ -68,6 +81,8 @@ void App::onShutdown() {
     _lobby.dispose();
     _assets = nullptr;
     _batch = nullptr;
+    _shaderBatch = nullptr;
+    _shader = nullptr;
 
     // Shutdown input
 #ifdef CU_MOBILE
@@ -234,7 +249,7 @@ void App::draw() {
             _lobby.render(_batch);
             break;
         default:
-            _gameplay.render(_batch);
+            _gameplay.draw(_batch, _shaderBatch);
             break;
     }
 

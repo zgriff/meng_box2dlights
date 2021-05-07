@@ -185,7 +185,6 @@ void GameScene::dispose() {
     _abilitybar = nullptr;
     _abilityname = nullptr;
     _timerHUD = nullptr;
-    _framesHUD = nullptr;
     _debug = false;
     _assets = nullptr;
 //        Scene2::dispose();
@@ -573,4 +572,45 @@ std::tuple<std::string, std::string> GameScene::getWinner() {
     ss1 << "Player" << winID << " with score " << winScore << endl;
     
     return std::make_tuple(ss1.str(), ss2.str());
+}
+
+
+void GameScene::draw(const std::shared_ptr<SpriteBatch> &batch, const std::shared_ptr<SpriteBatch> &shaderBatch) {
+    float playerLocs[_world->getPlayers().size() * 4];
+    int i = 0;
+    for (auto p : _world->getPlayers()) {
+        playerLocs[i] = _rootnode->getPosition().x + p->getSceneNode()->getPosition().x + p->getSceneNode()->getSize().width/2 + 25;
+        playerLocs[i+1] = _rootnode->getPosition().y + p->getSceneNode()->getPosition().y +  p->getSceneNode()->getSize().height/2;
+        playerLocs[i+2] = 1.0f;
+        
+        float angle = p->getDirection();
+        playerLocs[i + 3] = (angle - M_PI/2);
+        
+        i += 4;
+    }
+    
+    for (int j = i; j < (_world->getPlayers().size()* 4); ++j) {
+        playerLocs[j] = 0;
+    }
+    
+    
+    shaderBatch->begin(_camera->getCombined());
+    
+    GLint uPlayers = shaderBatch->getShader()->getUniformLocation("uPlayers");
+    shaderBatch->getShader()->setUniform4fv(uPlayers, (int) _world->getPlayers().size(), playerLocs);
+    
+    shaderBatch->setBlendFunc(_srcFactor, _dstFactor);
+    shaderBatch->setBlendEquation(_blendEquation);
+    _rootnode->render(shaderBatch,_rootnode->getNodeToWorldTransform(),_color);
+    
+    shaderBatch->end();
+    
+    
+    batch->begin(_camera->getCombined());
+    batch->setBlendFunc(_srcFactor, _dstFactor);
+    batch->setBlendEquation(_blendEquation);
+//    _rootnode->render(batch);
+    _UInode->render(batch);
+    batch->end();
+    
 }

@@ -19,6 +19,7 @@
 #include "MapConstants.h"
 #include "Booster.h"
 #include "Projectile.h"
+#include "Light.h"
 
 
 class World : public Asset {
@@ -50,6 +51,8 @@ protected:
     std::vector<std::shared_ptr<physics2::PolygonObstacle>> _walls;
     
     std::vector<std::shared_ptr<Player>> _players;
+    
+    std::vector<std::shared_ptr<Light>> _lights;
     
     std::vector<Vec2> _playerSpawns;
 
@@ -228,6 +231,14 @@ public:
     
     std::vector<std::shared_ptr<Player>> getPlayers(){
         return _players;
+    }
+    
+    std::shared_ptr<Light> getLight(int id){
+        return _lights[id];
+    }
+    
+    std::vector<std::shared_ptr<Light>> getLights(){
+        return _lights;
     }
 
     std::shared_ptr<Projectile> getProjectile(int id) {

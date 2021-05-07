@@ -64,6 +64,7 @@ void World::setRootNode(const std::shared_ptr<scene2::SceneNode>& root, float sc
     std::shared_ptr<scene2::WireNode> draw;
     
     auto playerTexture = _assets->get<Texture>("player");
+    auto lightTexture = _assets->get<Texture>("earth");
     auto orbTexture = _assets->get<Texture>("orb");
     auto swapStTexture = _assets->get<Texture>("swapstation");
     auto eggTexture = _assets->get<Texture>("egg");
@@ -170,7 +171,36 @@ void World::setRootNode(const std::shared_ptr<scene2::SceneNode>& root, float sc
         _projectiles.push_back(projectile);
     }
     
+    
+    
     Vec2 playerPos = ((Vec2)PLAYER_POS);
+    
+    auto light = Light::alloc(_eggSpawns[0]-Vec2(10.0f,0.0f));
+    _physicsWorld->addObstacle(light);
+    light->setWorld(_physicsWorld);
+//    light->setDrawScale(_scale);
+    light->calculateLightMesh();
+    light->setDrawScale(_scale);
+    light->setTextures(lightTexture);
+    
+    light->setDebugColor(Color4::YELLOW);
+    light->setDebugScene(_debugNode);
+    _worldNode->addChild(light->getSceneNode(),1);
+    _lights.push_back(light);
+    
+    auto light2 = Light::alloc(_playerSpawns[0]+Vec2(0.0f,-25.0f));
+    _physicsWorld->addObstacle(light2);
+    light2->setWorld(_physicsWorld);
+//    light->setDrawScale(_scale);
+    light2->calculateLightMesh();
+    light2->setDrawScale(_scale);
+    light2->setTextures(lightTexture);
+
+    light2->setDebugColor(Color4::YELLOW);
+    light2->setDebugScene(_debugNode);
+    _worldNode->addChild(light2->getSceneNode(),1);
+    _lights.push_back(light2);
+    
     Size playerSize(1, 2);
     for(int i = 0; i < _numPlayers; ++i){
         if (_playerSpawns.size()-1>=i) {
@@ -231,6 +261,7 @@ void World::clearRootNode() {
     _orbs.clear();
     _orbSpawns.clear();
     _eggSpawns.clear();
+    _lights.clear();
 }
 
 void World::showDebug(bool flag) {

@@ -31,7 +31,7 @@ protected:
     std::shared_ptr<cugl::AssetManager> _assets;
     
     /** Reference to the physics root of the scene graph */
-    std::shared_ptr<cugl::scene2::SceneNode> _rootnode; 
+    std::shared_ptr<cugl::scene2::SceneNode> _rootnode;
     
     std::shared_ptr<World> _world;
     
@@ -47,8 +47,8 @@ protected:
     Vec2 _worldOffset;
 
     std::shared_ptr<cugl::scene2::Label> _roomIdHUD;
-	
-	std::shared_ptr<cugl::scene2::ProgressBar>  _abilitybar;
+    
+    std::shared_ptr<cugl::scene2::ProgressBar>  _abilitybar;
     std::shared_ptr<cugl::scene2::Label> _abilityname;
     AbilityController _abilityController;
 
@@ -206,6 +206,8 @@ public:
 
     std::string getResults();
     std::tuple<std::string, std::string> getWinner();
+    
+    void draw(const std::shared_ptr<SpriteBatch>& batch, const std::shared_ptr<SpriteBatch>& shaderBatch);
 
 };
 

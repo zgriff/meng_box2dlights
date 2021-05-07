@@ -2,7 +2,10 @@ R"(
 
 #ifdef CUGLES
 // This one line is all the difference
-precision highp float;  // highp required for gradient precision
+precision lowp float;  // highp required for gradient precision
+#define MED mediump
+#else
+#define MED
 #endif
 
 // Bit vector for texturing, gradients, and scissoring
@@ -13,6 +16,8 @@ uniform vec2 uBlur;
 // The texture for sampling
 uniform sampler2D uTexture;
 
+uniform vec4 uPlayers[8];
+
 // The output color
 out vec4 frag_color;
 
@@ -21,14 +26,6 @@ in vec2 outPosition;
 in vec4 outColor;
 in vec2 outTexCoord;
 
-float rangle (vec2 v) {
-    float a = atan(v.y/v.x);
-    return v.x > 0.? a: a + 3.14159;
-}
-float dangle (float a, float b) {
-    float d = abs(a-b);
-    return d > 3.14159 ? d - 3.14159 * 2. : d;
-}
 float sq (float x) {
     return x * x;
 }
@@ -131,52 +128,48 @@ vec4 blursample(vec2 coord) {
     return result;
 }
 
+vec3 playerLight(vec4 player, vec2 pos, vec3 texColor) {
+    vec3 col = vec3(0.0, 0.0, 0.0);
+    if (player.z == 0.0f) {
+        return col;
+    }
+    //the flashlight angle
+    float lightRadius = 300.0;
+    float d = dist(player.xy, pos);
+    vec3 flashCol = texColor;
+    if (d <= lightRadius) {
+        col = flashCol;
+    }
+    return col;
+
+}
+
+
 /**
  * Performs the main fragment shading.
  */
 void main(void) {
-    vec4 result;
-    float fType = float(uType);
-    if (mod(fType, 4.0) >= 2.0) {
-        // Apply a gradient color
-        mat3  cmatrix = gdMatrix;
-        vec2  cextent = gdExtent;
-        float cfeathr = gdFeathr;
-        if (outColor.z != 0.0) {
-            // Modulation of start point (linear gradient only)
-            cmatrix = mat3(cmatrix[0],cmatrix[1],
-                           cmatrix[2].x+(cmatrix[0].x+cmatrix[1].x)*(-outColor.z),
-                           cmatrix[2].y+(cmatrix[0].y+cmatrix[1].y)*(-outColor.z),
-                           1.0);
-        }
-        if (outColor.w != 0.0) {
-            // Modulation of end point (linear gradient only)
-            cextent = vec2(cextent.x,cextent.y+outColor.w*0.5);
-            cfeathr = cfeathr+outColor.w;
-        }
-        vec2 pt = (cmatrix * vec3(outColor.xy,1.0)).xy;
-        float d = boxgradient(pt,cextent,gdRadius,cfeathr);
-        result = mix(gdInner,gdOuter,d);
-    } else {
-        // Use a solid color
-        result = outColor;
-    }
-    
-    if (mod(fType, 2.0) == 1.0) {
-        // Include texture (tinted by color or gradient)
-        if (uType >= 8) {
-            result *= blursample(outTexCoord);
-        } else {
-            result *= texture(uTexture, outTexCoord);
-        }
-    }
-    
-    if (mod(fType, 8.0) >= 4.0) {
-        // Apply scissor mask
-        result *= scissormask(outPosition);
-    }
+    vec4 result = texture(uTexture, outTexCoord);
+    vec3 col = vec3(0.0, 0.0, 0.0);
 
+    for (int i = 0; i < 1; i++) {
+        vec3 pLight = playerLight(uPlayers[i], outPosition, result.rgb);
+        col += pLight;
+    }
     frag_color = result;
+//    frag_color = v_color;
 }
 
 )"
+
+//"#ifdef GL_ES\n" //
+//            + "precision lowp float;\n" //
+//            + "#define MED mediump\n"
+//            + "#else\n"
+//            + "#define MED \n"
+//            + "#endif\n" //
+//                + "varying vec4 v_color;\n" //
+//                + "void main()\n"//
+//                + "{\n" //
+//                + "  gl_FragColor = "+gamma+"(v_color);\n" //
+//                + "}";
