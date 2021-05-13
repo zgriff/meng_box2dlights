@@ -16,17 +16,21 @@
 #include <Box2D/Dynamics/Contacts/b2Contact.h>
 #include <Box2D/Collision/b2Collision.h>
 #include "Light.h"
+#include "PointLight.h"
 
 
 using namespace cugl;
 
-class RayHandler : public Asset {
+class RayHandler {
 protected:
     /** The root node of this level */
     std::shared_ptr<scene2::SceneNode> _root;
     
     /** The bounds of this level in physics coordinates */
     Rect _bounds;
+    
+    //TODO: draw scale??
+    float _scale;
     
     const bool gammaCorrection = false;
     const float gammaCorrectionParameter = 1.0f;
@@ -40,6 +44,8 @@ protected:
     
     //TODO: modify these
     std::vector<Vec2> _lightLocs;
+    
+    std::vector<std::shared_ptr<Light>> _lights;
     
     std::vector<bool> _disabledLights;
     
@@ -69,7 +75,12 @@ protected:
     
 public:
 #pragma mark -
-#pragma mark Constructors
+#pragma mark Constructors and DESTRUCTORS
+    
+//    virtual bool init() {return init(Vec2::ZERO);}
+    
+    virtual bool init(const std::shared_ptr<scene2::SceneNode>& root, const std::shared_ptr<cugl::physics2::ObstacleWorld> world, float scale);
+    
     /**
      * Creates a new game level with no source file.
      *
@@ -78,11 +89,19 @@ public:
      *
      * @return  an autoreleased level file
      */
-    static std::shared_ptr<RayHandler> alloc() {
+    static std::shared_ptr<RayHandler> alloc(const std::shared_ptr<scene2::SceneNode>& root, const std::shared_ptr<cugl::physics2::ObstacleWorld> world, float scale) {
         std::shared_ptr<RayHandler> result = std::make_shared<RayHandler>();
-        return (result->init("") ? result : nullptr);
+        return (result->init(root, world, scale) ? result : nullptr);
     }
     
+    
+    
+    
+    RayHandler(void) {};
+    
+    virtual ~RayHandler(void);
+    
+    void dispose();
     
 #pragma mark -
 #pragma mark Getters and Setteres
@@ -94,18 +113,20 @@ public:
     // check if light is on screen
     bool intersect(float x, float y, float radius);
     
+    std::shared_ptr<Light> getLight(int lid){
+        return _lights[lid];
+    }
     
     
-    
-    Mesh<SpriteVertex2> calculateLightMesh(Light* light);
-    
+    void setRootNode(const std::shared_ptr<scene2::SceneNode>& root, const std::shared_ptr<cugl::physics2::ObstacleWorld> world, float scale);
     
     
-    RayHandler(void);
+    bool addPointLight(Vec2 vec, int numRays, float radius);
     
-    virtual ~RayHandler(void);
+    bool addPointLight(float x, float y, int numRays, float radius) {
+        return addPointLight(Vec2(x,y),numRays,radius);
+    };
     
-    void dispose();
     
 };
 

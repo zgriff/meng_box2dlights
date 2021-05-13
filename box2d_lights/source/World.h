@@ -19,7 +19,7 @@
 #include "MapConstants.h"
 #include "Booster.h"
 #include "Projectile.h"
-#include "Light.h"
+#include "RayHandler.h"
 
 
 class World : public Asset {
@@ -36,6 +36,8 @@ protected:
     
     Vec2 _sceneSize;
     
+    std::shared_ptr<RayHandler> _rayHandler;
+    
     /** Reference to the physics root of the scene graph */
     std::shared_ptr<cugl::scene2::SceneNode> _worldNode;
     
@@ -43,6 +45,8 @@ protected:
     
     /** The Box2D world */
     std::shared_ptr<cugl::physics2::ObstacleWorld> _physicsWorld;
+    
+    std::unordered_map<int,std::tuple<int,int,int>> _customizations;
     
     std::vector<std::tuple<std::string,Vec2>> _bgTiles;
     
@@ -52,9 +56,8 @@ protected:
     
     std::vector<std::shared_ptr<Player>> _players;
     
-    std::vector<std::shared_ptr<Light>> _lights;
-    
-    std::vector<Vec2> _playerSpawns;
+    std::vector<Vec3> _playerSpawns;
+    std::vector<Vec3> _NPCSpawns;
 
     std::vector<std::shared_ptr<Projectile>> _projectiles;
     
@@ -78,11 +81,13 @@ protected:
     
     float _scale;
     uint8_t _numPlayers;
+    uint8_t _numNPCs;
     uint8_t _initOrbCount;
     uint8_t _currOrbCount;
     uint8_t _currEggCount;
     uint8_t _totalEggCount;
 
+    time_t _eggSpawnCooldown;
     
 #pragma mark Internal Helpers
     bool loadPlayer(const int i, Vec2 loc);
@@ -93,9 +98,9 @@ protected:
     
     bool loadGameObject(const std::shared_ptr<JsonValue>& json);
     
-    bool loadOrb(const std::shared_ptr<JsonValue>& json);
+    bool loadOrbActive(const std::shared_ptr<JsonValue>& json);
     
-    bool loadOrbLoc(const std::shared_ptr<JsonValue>& json);
+    bool loadOrbInactive(const std::shared_ptr<JsonValue>& json);
     
     bool loadStation(const std::shared_ptr<JsonValue>& json);
 
@@ -233,12 +238,8 @@ public:
         return _players;
     }
     
-    std::shared_ptr<Light> getLight(int id){
-        return _lights[id];
-    }
-    
-    std::vector<std::shared_ptr<Light>> getLights(){
-        return _lights;
+    void setCustomizations(std::unordered_map<int,std::tuple<int,int,int>> cust) {
+        _customizations = cust;
     }
 
     std::shared_ptr<Projectile> getProjectile(int id) {
@@ -325,6 +326,10 @@ public:
     std::shared_ptr<Booster> getBooster(int id) {
         return _boosters[id];
     }
+    
+    time_t getEggSpawnCooldown() { return _eggSpawnCooldown; }
+    
+    void setEggSpawnCooldown(time_t t) { _eggSpawnCooldown = t; }
     
     std::shared_ptr<cugl::scene2::SceneNode> getSceneNode(){
         return _worldNode;

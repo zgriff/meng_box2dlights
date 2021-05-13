@@ -14,14 +14,6 @@
 
 using namespace cugl;
 
-const std::string _vsource =
-#include "../assets/shaders/lightShader.vert"
-;
-const std::string _fsource =
-#include "../assets/shaders/lightShader.frag"
-;
-
-
 
 #pragma mark -
 #pragma mark Gameplay Control
@@ -29,13 +21,8 @@ const std::string _fsource =
 
 void App::onStartup() {
     srand((unsigned) time(0));
-    
-    _shader = Shader::alloc(SHADER(_vsource),SHADER( _fsource));
-    _shaderBatch = SpriteBatch::alloc(_shader);
-    
     _assets = AssetManager::alloc();
     _batch  = SpriteBatch::alloc();
-    
     auto cam = OrthographicCamera::alloc(getDisplaySize());
 
     // Start-up basic input
@@ -81,8 +68,6 @@ void App::onShutdown() {
     _lobby.dispose();
     _assets = nullptr;
     _batch = nullptr;
-    _shaderBatch = nullptr;
-    _shader = nullptr;
 
     // Shutdown input
 #ifdef CU_MOBILE
@@ -153,23 +138,29 @@ void App::onResume() {
              break;
          }
          case SceneSelect::Menu:{
+             _menu.update();
              if (_menu.isActive()) {
  //                _menu.update(0.01f);
                  NetworkController::step();
  //                CULog("menu scene");
                  if((_menu.createPressed() || _menu.joinPressed()) && NetworkController::getStatus() == cugl::CUNetworkConnection::NetStatus::Connected){
                      _menu.setActive(false);
+                     _menu.getSettings()->removeAllChildren();
+                     _menu.getSettings()->dispose();
+                     _menu.removeAllChildren();
+                     _menu.dispose();
                      _lobby.init(_assets);
                      _lobby.setActive(true);
                      //NetworkController::setLobbyScene(_lobby);
-                     _menu.dispose();
                      _currentScene = SceneSelect::Lobby;
                  }
-             } else {
+             }
+             else {
                  _menu.setActive(false);
+                 _menu.removeAllChildren();
+                 _menu.dispose();
                  _lobby.init(_assets);
                  _lobby.setActive(true);
-                 _menu.dispose();
                  _currentScene = SceneSelect::Lobby;
              }
              break;
@@ -179,11 +170,14 @@ void App::onResume() {
                  _lobby.update(0.01f);
              } else {
                  _lobby.setActive(false);
-                 _gameplay.init(_assets, _lobby.getSelectedMap());
+                 _lobby.getSettings()->removeAllChildren();
+                 _lobby.getSettings()->dispose();
+                 _lobby.removeAllChildren();
+                 _lobby.dispose();
+                 _gameplay.init(_assets);
                  _gameplay.setActive(true);
                  _gameplay.setMovementStyle(0);
                  startTimer = time(NULL);
-                 _lobby.dispose();
                  _currentScene = SceneSelect::Game;
              }
              break;
@@ -192,9 +186,24 @@ void App::onResume() {
              _gameplay.update(timestep);
              if (time(NULL) - startTimer >= gameTimer) {
                  _results.init(_assets, _gameplay.getResults(), _gameplay.getWinner());
+                 _gameplay.getSettings()->removeAllChildren();
+                 _gameplay.getSettings()->dispose();
                  _gameplay.dispose();
  //                _gameplay.reset();
                  _currentScene = SceneSelect::Results;
+                 
+             }
+             else {
+                 if (_gameplay.getSettings()->leaveGamePressed()) {
+                     CULog("leave game in app");
+                     NetworkController::destroyConn();
+                     _gameplay.getSettings()->removeAllChildren();
+                     _gameplay.getSettings()->dispose();
+                     _gameplay.dispose();
+                     _menu.init(_assets);
+                     _currentScene = SceneSelect::Menu;
+                     _menu.setActive(true);
+                 }
              }
              break;
          }
@@ -207,17 +216,13 @@ void App::onResume() {
                  _currentScene = SceneSelect::Lobby;
              }
              else if (_results.mainMenu()) {
+                 NetworkController::destroyConn();
                  _results.dispose();
                  _menu.init(_assets);
                  _currentScene = SceneSelect::Menu;
                  _menu.setActive(true);
 
              }
- //            else {
- //                _results.dispose();
- //                _gameplay.dispose();
- //            }
- //            _results.update(timestep);
              break;
          }
          default:
@@ -249,7 +254,7 @@ void App::draw() {
             _lobby.render(_batch);
             break;
         default:
-            _gameplay.draw(_batch, _shaderBatch);
+            _gameplay.render(_batch);
             break;
     }
 

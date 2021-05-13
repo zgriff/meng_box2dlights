@@ -18,42 +18,40 @@ using namespace cugl;
 class PointLight : public Light {
 protected:
     
-    std::shared_ptr<cugl::scene2::SceneNode> _sceneNode;
+//    float _drawscale;
+//
+//
+//    bool _staticLight = false;
+//
+//    bool _culled = false;
+//
+//    bool _dirty = true;
+//
+//    bool _ignoreBody = false;
+//
+//    int _numRays;
+//    int _numVerts;
     
-    Color4 _defaultColor = Color4(0.75f, 0.75f, 0.5f, 0.75f);
-    int _minRays = 3;
+    float _radius;
+//    float _direction;
+//    float _colorF;
+//    float _softShadowLength = 2.5f;
     
-    Color4 _color;
+    std::vector<float> _segments;
+    std::vector<SpriteVertex2> _segmentsMesh;
     
-    Vec2 _pos;
-    
-    
-    bool _staticLight = false;
-    
-    bool _culled = false;
-    
-    bool _dirty = true;
-    
-    bool _ignoreBody = false;
-    
-    int _numRays;
-    int _numVerts;
-    
-    float _distance;
-    float _direction;
-    float _colorF;
-    float _softShadowLength = 2.5f;
-    
-    
-    Mesh<SpriteVertex2> lightMesh;
-    Mesh<SpriteVertex2> softShadowMesh;
+    std::vector<float>  _endx;
+    std::vector<float>  _endy;
     
     
-//    float segments[];
-//    float mx[];
-//    float my[];
-//    float f[];
-    int m_index = 0;
+    
+//    Poly2 _poly;
+//    Poly2 _polyLastFrame;
+//
+//    Mesh<SpriteVertex2> _lightMesh;
+//    Mesh<SpriteVertex2> _lightMeshLF;
+//    Mesh<SpriteVertex2> _softShadowMesh;
+//    Mesh<SpriteVertex2> _softShadowMeshLF;
     
     
     
@@ -71,6 +69,57 @@ public:
     
     
     
+    
+#pragma mark -
+#pragma mark Construct Destruct
+    
+    /**
+     * Initializes a new wheel object of the given dimensions.
+     *
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
+     *
+     * @param  pos  Initial position in world coordinates
+     * @param  numRays  Number of rays in the light
+     * @param  radius  Radius of the point light circle
+     *
+     * @return  true if the obstacle is initialized properly, false otherwise.
+     */
+    virtual bool init(const Vec2 pos, int numRays, float radius);
+    
+    
+    /**
+     * Returns a new point light object at the given point with no radius.
+     *
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
+     *
+     * @param  pos  Initial position in world coordinates
+     * @param  numRays  Number of rays in the light
+     * @param  radius  Radius of the point light circle
+     *
+     * @return a new point light object at the given point with no radius.
+     */
+    static std::shared_ptr<PointLight> alloc(const Vec2 pos, int numRays, float radius) {
+        std::shared_ptr<PointLight> result = std::make_shared<PointLight>();
+        return (result->init(pos, numRays, radius) ? result : nullptr);
+    }
+    
+    
+    virtual Mesh<SpriteVertex2> calculateLightMesh() override;
+    
+    
+    
+    /**
+     * Destroys this level, releasing all resources.
+     */
+    virtual ~PointLight(void);
+    
+    void dispose();
     
     
 };

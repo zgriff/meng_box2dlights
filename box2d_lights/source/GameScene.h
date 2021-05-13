@@ -10,6 +10,7 @@
 #define __GAME_SCENE_H__
 #include <cugl/cugl.h>
 #include <vector>
+#include <map>
 #include <time.h>
 #include "InputController.h"
 #include "CollisionController.h"
@@ -24,6 +25,7 @@
 #include <Box2D/Collision/b2Collision.h>
 #include "World.h"
 #include "AbilityController.h"
+#include "Settings.h"
 
 class GameScene : public cugl::Scene2 {
 protected:
@@ -31,7 +33,7 @@ protected:
     std::shared_ptr<cugl::AssetManager> _assets;
     
     /** Reference to the physics root of the scene graph */
-    std::shared_ptr<cugl::scene2::SceneNode> _rootnode;
+    std::shared_ptr<cugl::scene2::SceneNode> _rootnode; 
     
     std::shared_ptr<World> _world;
     
@@ -41,25 +43,29 @@ protected:
     /** Reference to the debug root of the scene graph */
     std::shared_ptr<cugl::scene2::SceneNode> _debugnode;
     
+    std::shared_ptr<Settings> _settingsNode;
+    
     /** The scale between the physics world and the screen (MUST BE UNIFORM) */
     float _scale;
     
     Vec2 _worldOffset;
 
     std::shared_ptr<cugl::scene2::Label> _roomIdHUD;
-    
-    std::shared_ptr<cugl::scene2::ProgressBar>  _abilitybar;
+	
+	std::shared_ptr<cugl::scene2::ProgressBar>  _abilitybar;
     std::shared_ptr<cugl::scene2::Label> _abilityname;
     AbilityController _abilityController;
 
     std::shared_ptr<cugl::scene2::Label> _hatchnode;
 
     std::shared_ptr<cugl::scene2::ProgressBar>  _hatchbar;
+    std::shared_ptr<cugl::scene2::Button>  _settingsButton;
     std::string _currRoomId;
     
     time_t _hatchTextTimer = 5; //5 secs
     time_t _hatchedTime;
     time_t _startTime;
+    time_t prevTime;
 
     /** Reference to the UI element exposing the frame rate */
     std::shared_ptr<cugl::scene2::Label> _framesHUD;
@@ -136,7 +142,7 @@ public:
      *
      * @return true if the controller is initialized properly, false otherwise.
      */
-    bool init(const std::shared_ptr<cugl::AssetManager>& assets, string mapkey);
+    bool init(const std::shared_ptr<cugl::AssetManager>& assets);
 
     
 #pragma mark -
@@ -155,6 +161,8 @@ public:
      * Resets the status of the game so that we can play again.
      */
     void reset() override;
+    
+    void draw(const std::shared_ptr<SpriteBatch>& batch, const std::shared_ptr<SpriteBatch>& shaderBatch);
     
 #pragma mark Internal Object Management
     /**
@@ -204,10 +212,10 @@ public:
     
     void moveOrb(Orb* orb);
 
-    std::string getResults();
-    std::tuple<std::string, std::string> getWinner();
+    std::map<std::string, int> getResults();
+    std::string getWinner();
     
-    void draw(const std::shared_ptr<SpriteBatch>& batch, const std::shared_ptr<SpriteBatch>& shaderBatch);
+    std::shared_ptr<Settings> getSettings() { return _settingsNode; }
 
 };
 
