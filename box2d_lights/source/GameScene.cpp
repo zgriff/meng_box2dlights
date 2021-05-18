@@ -593,34 +593,34 @@ std::string GameScene::getWinner() {
     
     
 void GameScene::draw(const std::shared_ptr<SpriteBatch> &batch, const std::shared_ptr<SpriteBatch> &shaderBatch) {
-    float playerLocs[_world->getPlayers().size() * 4];
-    int i = 0;
-    for (auto p : _world->getPlayers()) {
-        playerLocs[i] = _rootnode->getPosition().x + p->getSceneNode()->getPosition().x + p->getSceneNode()->getSize().width/2 + 25;
-        playerLocs[i+1] = _rootnode->getPosition().y + p->getSceneNode()->getPosition().y +  p->getSceneNode()->getSize().height/2;
-        playerLocs[i+2] = 1.0f;
-        
-        float angle = p->getDirection();
-        playerLocs[i + 3] = (angle - M_PI/2);
-        
-        i += 4;
-    }
-    shaderBatch->begin(_camera->getCombined());
-    
-    GLint uPlayers = shaderBatch->getShader()->getUniformLocation("uPlayers");
-    shaderBatch->getShader()->setUniform4fv(uPlayers, (int) _world->getPlayers().size(), playerLocs);
-    
-    shaderBatch->setBlendFunc(_srcFactor, _dstFactor);
-    shaderBatch->setBlendEquation(_blendEquation);
-    _rootnode->render(shaderBatch,_rootnode->getNodeToWorldTransform(),_color);
-    
-    shaderBatch->end();
+//    float playerLocs[_world->getPlayers().size() * 4];
+//    int i = 0;
+//    for (auto p : _world->getPlayers()) {
+//        playerLocs[i] = _rootnode->getPosition().x + p->getSceneNode()->getPosition().x + p->getSceneNode()->getSize().width/2 + 25;
+//        playerLocs[i+1] = _rootnode->getPosition().y + p->getSceneNode()->getPosition().y +  p->getSceneNode()->getSize().height/2;
+//        playerLocs[i+2] = 1.0f;
+//        
+//        float angle = p->getDirection();
+//        playerLocs[i + 3] = (angle - M_PI/2);
+//        
+//        i += 4;
+//    }
+//    shaderBatch->begin(_camera->getCombined());
+//    
+//    GLint uPlayers = shaderBatch->getShader()->getUniformLocation("uPlayers");
+//    shaderBatch->getShader()->setUniform4fv(uPlayers, (int) _world->getPlayers().size(), playerLocs);
+//    
+//    shaderBatch->setBlendFunc(_srcFactor, _dstFactor);
+//    shaderBatch->setBlendEquation(_blendEquation);
+//    _rootnode->render(shaderBatch,_rootnode->getNodeToWorldTransform(),_color);
+//    
+//    shaderBatch->end();
     
     
     batch->begin(_camera->getCombined());
     batch->setBlendFunc(_srcFactor, _dstFactor);
     batch->setBlendEquation(_blendEquation);
-//    _rootnode->render(batch);
+    _rootnode->render(batch);
     _UInode->render(batch);
     batch->end();
 }

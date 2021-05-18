@@ -44,6 +44,7 @@ bool Light::init(const Vec2 pos, float radius) {
     setSensor(true);
     _numRays = MIN_RAYS;
     _distance = 10.0f;
+    _color = _defaultColor;
 //    _sceneNode = scene2::PolygonNode::alloc();
     _updateTimer = clock();
     _blendEquation = GL_FUNC_ADD;
@@ -57,14 +58,14 @@ bool Light::init(const Vec2 pos, float radius) {
 
 void Light::setDrawScale(float scale) {
     _drawscale = scale;
-    _sceneNode = scene2::PolygonNode::alloc(_poly*_drawscale);
-    _sceneNode->setAnchor(Vec2::ANCHOR_CENTER);
-    _sceneNode->setColor(Color4(255.0f,255.0f,255.0f,100.0f));
+//    _sceneNode = scene2::PolygonNode::alloc(_poly*_drawscale);
+//    _sceneNode->setAnchor(Vec2::ANCHOR_CENTER);
+//    _sceneNode->setColor(Color4(255.0f,255.0f,255.0f,100.0f));
 
     _body->SetUserData(this);
-    if (_sceneNode != nullptr) {
-        _sceneNode->setPosition(getPosition()*_drawscale);
-    }
+//    if (_sceneNode != nullptr) {
+//        _sceneNode->setPosition(getPosition()*_drawscale);
+//    }
 }
 
 void Light::update(float delta) {
@@ -73,10 +74,10 @@ void Light::update(float delta) {
         calculateLightMesh();
         _updateTimer = clock();
     }
-    
-    if (_sceneNode != nullptr) {
-        _sceneNode->setPosition(getPosition()*_drawscale);
-    }
+//
+//    if (_sceneNode != nullptr) {
+//        _sceneNode->setPosition(getPosition()*_drawscale);
+//    }
 }
 
 Mesh<SpriteVertex2> Light::calculateLightMesh() {
@@ -129,16 +130,17 @@ Mesh<SpriteVertex2> Light::calculateLightMesh() {
         
     _segments.push_back(start.x);
     _segments.push_back(start.y);
-//    _segments.push_back(_color.getRGBA());
-//    _segments.push_back(1.0f);
+    _segments.push_back(_color.getRGBA());
+    _segments.push_back(1.0f);
     std::vector<Uint32> ind;
     
     for (int i = 0; i < _numRays; i++) {
         
         _segments.push_back(mx[i]);
         _segments.push_back(my[i]);
-//        _segmentsMesh.push_back(mx[i]);
-//        _segmentsMesh.push_back(my[i]);
+        _segments.push_back(_color.getRGBA());
+        _segments.push_back(1.0f - f[i]);
+
         ind.push_back(i+1);
         
         //if last, index to first vert on outside of poly (0 index is center)
@@ -149,29 +151,12 @@ Mesh<SpriteVertex2> Light::calculateLightMesh() {
         }
         
         ind.push_back(0);
-//        _segmentsMesh.push_back(_color.getRGBA());
-//        _segmentsMesh.push_back(1.0f - f[i]);
     }
-    
-    
 
     
     _poly = Poly2(_segments,ind);
     _lightMesh = Poly2(_segments,ind);
     
-    for (size_t ii = 0; ii < _lightMesh.vertices.size(); ii++) {
-        const Vec2 pos = _lightMesh.vertices[ii].position;
-        _lightMesh.vertices[ii].color = _color;
-//        _lightMesh.vertices[ii].texcoord = 1.0f - f[ii];
-        
-//        float s = pos.x/tsize.width;
-//        float t = pos.y/tsize.height;
-        
-    }
-    
-    if (_sceneNode != nullptr) {
-        _sceneNode->setPolygon(_poly*_drawscale);
-    }
     
     
     return _lightMesh;

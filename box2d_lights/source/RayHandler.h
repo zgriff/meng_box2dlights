@@ -9,6 +9,12 @@
 #ifndef RayHandler_h
 #define RayHandler_h
 
+#if CU_GL_PLATFORM == CU_GL_OPENGLES
+    #define SHADER(A) ("#version 300 es\n#define CUGLES 1\n"+A)
+#else
+    #define SHADER(A) ("#version 330\n"+A)
+#endif
+
 #include <stdio.h>
 #include <cugl/cugl.h>
 #include <vector>
@@ -18,13 +24,28 @@
 #include "Light.h"
 #include "PointLight.h"
 
+#define DEFAULT_CAPACITY  8192
+
 
 using namespace cugl;
 
-class RayHandler {
+
+
+
+
+
+class RayHandler : public scene2::SceneNode {
 protected:
-    /** The root node of this level */
-    std::shared_ptr<scene2::SceneNode> _root;
+    
+    std::shared_ptr<cugl::Shader> _shader;
+    std::shared_ptr<cugl::VertexBuffer> _vbo;
+    
+    GLuint _maxVertices;
+    GLuint _maxIndices;
+    GLuint _vertSize;
+    GLuint _indxSize;
+    LightVert* _vertData;
+    GLuint* _indxData;
     
     /** The bounds of this level in physics coordinates */
     Rect _bounds;
@@ -79,7 +100,7 @@ public:
     
 //    virtual bool init() {return init(Vec2::ZERO);}
     
-    virtual bool init(const std::shared_ptr<scene2::SceneNode>& root, const std::shared_ptr<cugl::physics2::ObstacleWorld> world, float scale);
+    virtual bool init();
     
     /**
      * Creates a new game level with no source file.
@@ -89,15 +110,15 @@ public:
      *
      * @return  an autoreleased level file
      */
-    static std::shared_ptr<RayHandler> alloc(const std::shared_ptr<scene2::SceneNode>& root, const std::shared_ptr<cugl::physics2::ObstacleWorld> world, float scale) {
+    static std::shared_ptr<RayHandler> alloc() {
         std::shared_ptr<RayHandler> result = std::make_shared<RayHandler>();
-        return (result->init(root, world, scale) ? result : nullptr);
+        return (result->init() ? result : nullptr);
     }
     
     
     
     
-    RayHandler(void) {};
+    RayHandler(void) : scene2::SceneNode() {};
     
     virtual ~RayHandler(void);
     
@@ -118,7 +139,9 @@ public:
     }
     
     
-    void setRootNode(const std::shared_ptr<scene2::SceneNode>& root, const std::shared_ptr<cugl::physics2::ObstacleWorld> world, float scale);
+    void setWorld(std::shared_ptr<cugl::physics2::ObstacleWorld> world) {_world = world;}
+    
+    void setScale(float scale) {_scale = scale;}
     
     
     bool addPointLight(Vec2 vec, int numRays, float radius);
@@ -126,6 +149,12 @@ public:
     bool addPointLight(float x, float y, int numRays, float radius) {
         return addPointLight(Vec2(x,y),numRays,radius);
     };
+    
+    
+    
+    void pushToBuffer();
+    
+    void draw(const std::shared_ptr<SpriteBatch> &batch, const Mat4 &transform, Color4 tint) override;
     
     
 };

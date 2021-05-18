@@ -10,6 +10,12 @@
 		920B5E56264D13AB004D4089 /* Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 920B5E55264D13AB004D4089 /* Settings.cpp */; };
 		920B5E57264D13AB004D4089 /* Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 920B5E55264D13AB004D4089 /* Settings.cpp */; };
 		920B5E58264D13AB004D4089 /* Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 920B5E55264D13AB004D4089 /* Settings.cpp */; };
+		920B5E60264E0411004D4089 /* lightShader.frag in Resources */ = {isa = PBXBuildFile; fileRef = 920B5E5E264E0410004D4089 /* lightShader.frag */; };
+		920B5E61264E0412004D4089 /* lightShader.frag in Resources */ = {isa = PBXBuildFile; fileRef = 920B5E5E264E0410004D4089 /* lightShader.frag */; };
+		920B5E62264E0412004D4089 /* lightShader.frag in Resources */ = {isa = PBXBuildFile; fileRef = 920B5E5E264E0410004D4089 /* lightShader.frag */; };
+		920B5E63264E0412004D4089 /* lightShader.vert in Resources */ = {isa = PBXBuildFile; fileRef = 920B5E5F264E0411004D4089 /* lightShader.vert */; };
+		920B5E64264E0412004D4089 /* lightShader.vert in Resources */ = {isa = PBXBuildFile; fileRef = 920B5E5F264E0411004D4089 /* lightShader.vert */; };
+		920B5E65264E0412004D4089 /* lightShader.vert in Resources */ = {isa = PBXBuildFile; fileRef = 920B5E5F264E0411004D4089 /* lightShader.vert */; };
 		92B706DC26409DF700BF7819 /* GameScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706AC26409DF400BF7819 /* GameScene.cpp */; };
 		92B706DD26409DF700BF7819 /* GameScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706AC26409DF400BF7819 /* GameScene.cpp */; };
 		92B706DE26409DF700BF7819 /* GameScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706AC26409DF400BF7819 /* GameScene.cpp */; };
@@ -188,6 +194,8 @@
 /* Begin PBXFileReference section */
 		920B5E51264D13AA004D4089 /* Settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Settings.h; sourceTree = "<group>"; };
 		920B5E55264D13AB004D4089 /* Settings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Settings.cpp; sourceTree = "<group>"; };
+		920B5E5E264E0410004D4089 /* lightShader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = lightShader.frag; sourceTree = "<group>"; };
+		920B5E5F264E0411004D4089 /* lightShader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = lightShader.vert; sourceTree = "<group>"; };
 		92B706AC26409DF400BF7819 /* GameScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameScene.cpp; sourceTree = "<group>"; };
 		92B706B026409DF400BF7819 /* LobbyScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyScene.h; sourceTree = "<group>"; };
 		92B706B126409DF400BF7819 /* Orb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Orb.cpp; sourceTree = "<group>"; };
@@ -361,6 +369,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		920B5E69264E04C6004D4089 /* shaders */ = {
+			isa = PBXGroup;
+			children = (
+				920B5E5E264E0410004D4089 /* lightShader.frag */,
+				920B5E5F264E0411004D4089 /* lightShader.vert */,
+			);
+			path = shaders;
+			sourceTree = "<group>";
+		};
 		EB22BDC325D0DE75002ACE41 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -476,6 +493,7 @@
 		EBBF18B11D749176008E2001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				920B5E69264E04C6004D4089 /* shaders */,
 				EB2BE9B41D74952A002FE78B /* main.cpp */,
 				92B706CB26409DF600BF7819 /* AbilityController.h */,
 				92B706B826409DF400BF7819 /* AbilityController.cpp */,
@@ -672,8 +690,10 @@
 				92B9BE7A2639EC0D005E845D /* shaders in Resources */,
 				92B707422640AB6A00BF7819 /* fonts in Resources */,
 				EB22BF9B25D0EA5C002ACE41 /* DeviceMargins.plist in Resources */,
+				920B5E62264E0412004D4089 /* lightShader.frag in Resources */,
 				EB22BF9625D0EA50002ACE41 /* json in Resources */,
 				EB22BF9725D0EA51002ACE41 /* textures in Resources */,
+				920B5E65264E0412004D4089 /* lightShader.vert in Resources */,
 				EB22BF9025D0EA49002ACE41 /* iOS.xcassets in Resources */,
 				92B7073F2640AB6A00BF7819 /* sounds in Resources */,
 				92B7073C2640AB6A00BF7819 /* maps in Resources */,
@@ -689,8 +709,10 @@
 				92B9BE792639EC0D005E845D /* shaders in Resources */,
 				92B707412640AB6A00BF7819 /* fonts in Resources */,
 				EB7454D01D750623002FBAE6 /* textures in Resources */,
+				920B5E61264E0412004D4089 /* lightShader.frag in Resources */,
 				EB7454AB1D74D846002FBAE6 /* iOS.xcassets in Resources */,
 				EB7454AC1D74D846002FBAE6 /* Landscape.storyboard in Resources */,
+				920B5E64264E0412004D4089 /* lightShader.vert in Resources */,
 				EBFE7C051E19B496001007C2 /* json in Resources */,
 				92B7073E2640AB6A00BF7819 /* sounds in Resources */,
 				92B7073B2640AB6A00BF7819 /* maps in Resources */,
@@ -703,11 +725,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				920B5E63264E0412004D4089 /* lightShader.vert in Resources */,
 				EBFE7C091E19B4AC001007C2 /* json in Resources */,
 				92B9BE782639EC0D005E845D /* shaders in Resources */,
 				92B7073D2640AB6A00BF7819 /* sounds in Resources */,
 				92B707402640AB6A00BF7819 /* fonts in Resources */,
 				EB2BE9BB1D7498D2002FE78B /* textures in Resources */,
+				920B5E60264E0411004D4089 /* lightShader.frag in Resources */,
 				92B7073A2640AB6A00BF7819 /* maps in Resources */,
 				EBBF189B1D74904A008E2001 /* Mac.xcassets in Resources */,
 			);

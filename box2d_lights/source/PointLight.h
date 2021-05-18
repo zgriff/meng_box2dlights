@@ -17,20 +17,7 @@ using namespace cugl;
 
 class PointLight : public Light {
 protected:
-    
-//    float _drawscale;
-//
-//
-//    bool _staticLight = false;
-//
-//    bool _culled = false;
-//
-//    bool _dirty = true;
-//
-//    bool _ignoreBody = false;
-//
-//    int _numRays;
-//    int _numVerts;
+
     
     float _radius;
 //    float _direction;
@@ -43,7 +30,8 @@ protected:
     std::vector<float>  _endx;
     std::vector<float>  _endy;
     
-    
+    std::vector<LightVert> _lightVerts;
+    std::vector<Uint32> _lightIndx;
     
 //    Poly2 _poly;
 //    Poly2 _polyLastFrame;
@@ -64,9 +52,11 @@ public:
     void setColor(float r, float g, float b, float a) {
         _color = Color4(r,g,b,a);
     }
+        
     
-    std::shared_ptr<cugl::scene2::SceneNode> getSceneNode() {return _sceneNode;}
+    std::vector<LightVert> getVerts() {return _lightVerts;}
     
+    std::vector<Uint32> getIndices() {return _lightIndx;}
     
     
     

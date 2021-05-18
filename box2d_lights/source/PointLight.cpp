@@ -43,6 +43,7 @@ PointLight::~PointLight(void) {
 bool PointLight::init(const Vec2 pos, int numRays, float radius) {
     WheelObstacle::init(pos, 1.0f);
     setSensor(true);
+    _color = _defaultColor;
     _numRays = numRays;
     _radius = radius;
 //    _sceneNode = scene2::PolygonNode::alloc();
@@ -55,36 +56,6 @@ bool PointLight::init(const Vec2 pos, int numRays, float radius) {
 }
 
 
-//void Light::setTextures(const std::shared_ptr<Texture>& lightText) {
-//
-//
-//}
-
-//
-//void PointLight::setDrawScale(float scale) {
-//    _drawscale = scale;
-//    _sceneNode = scene2::PolygonNode::alloc(_poly*_drawscale);
-//    _sceneNode->setPosition(getPosition()*_drawscale);
-//    _sceneNode->setAnchor(Vec2::ANCHOR_CENTER);
-//
-//    _body->SetUserData(this);
-//    if (_sceneNode != nullptr) {
-//        _sceneNode->setPosition(getPosition()*globals::BOX2D_TO_SCENE);
-//    }
-//}
-//
-//void PointLight::update(float delta) {
-//    Obstacle::update(delta);
-//    if (clock() - _updateTimer  >= _updateRate) {
-//        calculateLightMesh();
-//        _updateTimer = clock();
-//    }
-//
-//    if (_sceneNode != nullptr) {
-//        _sceneNode->setPosition(getPosition()*globals::BOX2D_TO_SCENE);
-//    }
-//}
-
 Mesh<SpriteVertex2> PointLight::calculateLightMesh() {
     Mesh<SpriteVertex2> result;
     
@@ -93,16 +64,14 @@ Mesh<SpriteVertex2> PointLight::calculateLightMesh() {
     f.clear();
     _segments.clear();
     _segmentsMesh.clear();
+    _lightVerts.clear();
+    _lightIndx.clear();
     
     
     
     Vec2 start;
     Vec2 vec = getPosition();
-//    auto angle = getAngle();
-//    float cosine = cos(angle);
-//    float sine = sin(angle);
-//    float dX = vec.x * cosine - vec.y * sine;
-//    float dY = vec.x * sine + vec.y * cosine;
+
     start.x = vec.x;
     start.y = vec.y;
 //    setDirection(vec + angle * (180.0 / M_PI););
@@ -120,8 +89,6 @@ Mesh<SpriteVertex2> PointLight::calculateLightMesh() {
         cosarr[i] = cos(angle);
         endX[i] = _radius * cosarr[i];
         endY[i] = _radius * sinarr[i];
-        CULog("endx : %f", endX[i]);
-        CULog("endy : %f", endY[i]);
     }
     
     for (int i = 0; i < _numRays; i++) {
@@ -136,19 +103,33 @@ Mesh<SpriteVertex2> PointLight::calculateLightMesh() {
         }
     }
     
+    LightVert light;
+    
+    light.pos = Vec2(start.x,start.y);
+    light.color = _color;
+    light.frac = 1.0f;
+    
+    _lightVerts.push_back(light);
         
     _segments.push_back(start.x);
     _segments.push_back(start.y);
-//    _segments.push_back(_color.getRGBA());
-//    _segments.push_back(1.0f);
+    _segments.push_back(_color.getRGBA());
+    _segments.push_back(1.0f);
     std::vector<Uint32> ind;
     
     for (int i = 0; i < _numRays; i++) {
         
+        light.pos = Vec2(mx[i],my[i]);
+        light.color = _color;
+        light.frac = 1.0f - f[i];
+        
+        _lightVerts.push_back(light);
+        
         _segments.push_back(mx[i]);
         _segments.push_back(my[i]);
-//        _segmentsMesh.push_back(mx[i]);
-//        _segmentsMesh.push_back(my[i]);
+        _segments.push_back(_color.getRGBA());
+        _segments.push_back(1.0f - f[i]);
+
         ind.push_back(i+1);
         
         //if last, index to first vert on outside of poly (0 index is center)
@@ -159,32 +140,24 @@ Mesh<SpriteVertex2> PointLight::calculateLightMesh() {
         }
         
         ind.push_back(0);
-//        _segmentsMesh.push_back(_color.getRGBA());
-//        _segmentsMesh.push_back(1.0f - f[i]);
+        
+        _lightIndx.push_back(i+1);
+        
+        //if last, _lightIndxex to first vert on outside of poly (0 _lightIndxex is center)
+        if (i == _numRays-1) {
+            _lightIndx.push_back(1);
+        } else {
+            _lightIndx.push_back(i+2);
+        }
+        
+        _lightIndx.push_back(0);
     }
-    
-    
 
     
-    _poly = Poly2(_segments,ind);
+//    _poly = Poly2(_segments,ind);
     _lightMesh = Poly2(_segments,ind);
     
-    for (size_t ii = 0; ii < _lightMesh.vertices.size(); ii++) {
-        const Vec2 pos = _lightMesh.vertices[ii].position;
-        _lightMesh.vertices[ii].color = _color;
-//        _lightMesh.vertices[ii].texcoord = 1.0f - f[ii];
-        
-//        float s = pos.x/tsize.width;
-//        float t = pos.y/tsize.height;
-        
-    }
-    
-    if (_sceneNode != nullptr) {
-        _sceneNode->setPolygon(_poly*_drawscale);
-    }
     
     
     return _lightMesh;
 }
-
-

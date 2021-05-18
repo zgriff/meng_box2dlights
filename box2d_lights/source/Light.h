@@ -21,6 +21,14 @@
 
 using namespace cugl;
 
+class LightVert {
+public:
+    Vec2 pos;
+    Color4 color;
+    float frac;
+};
+
+
 class Light : public cugl::physics2::WheelObstacle{
 protected:
     
@@ -29,7 +37,7 @@ protected:
     /** The Box2D world */
     std::shared_ptr<cugl::physics2::ObstacleWorld> _world;
     
-    const Color4 _defaultColor = Color4(0.75f, 0.75f, 0.5f, 0.75f);
+    const Color4 _defaultColor = Color4::RED;
     
     Color4 _color;
     
@@ -200,6 +208,8 @@ public:
     Poly2 getPolyLastFrame() {return _polyLastFrame;}
     
     void setPolyLastFrame(Poly2 poly) {_polyLastFrame = poly;}
+    
+    std::vector<float> getSegments() {return _segments;}
     
     
 #pragma mark -
