@@ -63,8 +63,6 @@ void World::setRootNode(const std::shared_ptr<scene2::SceneNode>& root, float sc
     _rayHandler->setScale(_scale);
     
     
-    
-    
     // Add the individual elements
     std::shared_ptr<scene2::PolygonNode> poly;
     std::shared_ptr<scene2::WireNode> draw;
@@ -79,13 +77,13 @@ void World::setRootNode(const std::shared_ptr<scene2::SceneNode>& root, float sc
     //Currently adding elements in back to front order
     //TODO create ordered nodes so if we need to change the order of layering
 //    // we can just alter z coord -- will likely need custom draw method
-//    for(auto it = _bgTiles.begin(); it!= _bgTiles.end();  ++it) {
-//        std::string name = get<0>(*it);
-//        Vec2 pos = get<1>(*it);
-//        auto sprite = scene2::PolygonNode::allocWithTexture(_assets->get<Texture>(name));
-//        sprite->setPosition(pos*_scale);
-//        _worldNode->addChild(sprite,0);
-//    }
+    for(auto it = _bgTiles.begin(); it!= _bgTiles.end();  ++it) {
+        std::string name = get<0>(*it);
+        Vec2 pos = get<1>(*it);
+        auto sprite = scene2::PolygonNode::allocWithTexture(_assets->get<Texture>(name));
+        sprite->setPosition(pos*_scale);
+        _worldNode->addChild(sprite,0);
+    }
     
     for(auto it = _walls.begin(); it != _walls.end(); ++it) {
         std::shared_ptr<physics2::PolygonObstacle> wall = *it;
@@ -177,12 +175,7 @@ void World::setRootNode(const std::shared_ptr<scene2::SceneNode>& root, float sc
     _worldNode->addChild(_rayHandler,1);
 
     _rayHandler->addPointLight(_eggSpawns[0]-Vec2(0.0f,5.0f), 25, 10.0f);
-    _rayHandler->addPointLight(_playerSpawns[0]-Vec2(0.0f,25.0f), 25, 10.0f);
-    _rayHandler->getLight(0)->setDebugScene(_debugNode);
-    _rayHandler->getLight(1)->setDebugScene(_debugNode);
-    _rayHandler->getLight(0)->setDebugColor(Color4::RED);
-    _rayHandler->getLight(1)->setDebugColor(Color4::RED);
-    
+    _rayHandler->addPointLight(_eggSpawns[0]-Vec2(0.0f,-5.0f), 25, 10.0f);
     
     
     Vec2 playerPos = ((Vec2)PLAYER_POS);

@@ -16,8 +16,6 @@ uniform vec2 uBlur;
 // The texture for sampling
 uniform sampler2D uTexture;
 
-uniform vec4 uPlayers[8];
-
 // The output color
 out vec4 frag_color;
 
@@ -25,24 +23,14 @@ out vec4 frag_color;
 in vec2 outPosition;
 in vec4 outColor;
 in float outFrac;
+in vec2 outTexCoord;
 
 /**
  * Performs the main fragment shading.
  */
 void main(void) {
-    frag_color = outColor;
+    frag_color = vec4(outColor.r,outColor.g,outColor.b,outColor.a*outFrac);;
 }
 
 )"
 
-//"#ifdef GL_ES\n" //
-//            + "precision lowp float;\n" //
-//            + "#define MED mediump\n"
-//            + "#else\n"
-//            + "#define MED \n"
-//            + "#endif\n" //
-//                + "varying vec4 v_color;\n" //
-//                + "void main()\n"//
-//                + "{\n" //
-//                + "  gl_FragColor = "+gamma+"(v_color);\n" //
-//                + "}";

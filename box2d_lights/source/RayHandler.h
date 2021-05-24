@@ -32,8 +32,6 @@ using namespace cugl;
 
 
 
-
-
 class RayHandler : public scene2::SceneNode {
 protected:
     
@@ -66,7 +64,7 @@ protected:
     //TODO: modify these
     std::vector<Vec2> _lightLocs;
     
-    std::vector<std::shared_ptr<Light>> _lights;
+    std::vector<std::shared_ptr<PointLight>> _lights;
     
     std::vector<bool> _disabledLights;
     
@@ -100,7 +98,7 @@ public:
     
 //    virtual bool init() {return init(Vec2::ZERO);}
     
-    virtual bool init();
+    virtual bool init() override;
     
     /**
      * Creates a new game level with no source file.
@@ -122,7 +120,7 @@ public:
     
     virtual ~RayHandler(void);
     
-    void dispose();
+    void dispose() override;
     
 #pragma mark -
 #pragma mark Getters and Setteres
@@ -134,7 +132,7 @@ public:
     // check if light is on screen
     bool intersect(float x, float y, float radius);
     
-    std::shared_ptr<Light> getLight(int lid){
+    std::shared_ptr<PointLight> getLight(int lid){
         return _lights[lid];
     }
     

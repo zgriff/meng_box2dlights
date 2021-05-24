@@ -16,6 +16,12 @@
 		920B5E63264E0412004D4089 /* lightShader.vert in Resources */ = {isa = PBXBuildFile; fileRef = 920B5E5F264E0411004D4089 /* lightShader.vert */; };
 		920B5E64264E0412004D4089 /* lightShader.vert in Resources */ = {isa = PBXBuildFile; fileRef = 920B5E5F264E0411004D4089 /* lightShader.vert */; };
 		920B5E65264E0412004D4089 /* lightShader.vert in Resources */ = {isa = PBXBuildFile; fileRef = 920B5E5F264E0411004D4089 /* lightShader.vert */; };
+		9266991C2654B164005CB489 /* PositionalLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9266991A2654B164005CB489 /* PositionalLight.cpp */; };
+		9266991D2654B165005CB489 /* PositionalLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9266991A2654B164005CB489 /* PositionalLight.cpp */; };
+		9266991E2654B165005CB489 /* PositionalLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9266991A2654B164005CB489 /* PositionalLight.cpp */; };
+		926699272654B186005CB489 /* ConeLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 926699252654B186005CB489 /* ConeLight.cpp */; };
+		926699282654B186005CB489 /* ConeLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 926699252654B186005CB489 /* ConeLight.cpp */; };
+		926699292654B186005CB489 /* ConeLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 926699252654B186005CB489 /* ConeLight.cpp */; };
 		92B706DC26409DF700BF7819 /* GameScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706AC26409DF400BF7819 /* GameScene.cpp */; };
 		92B706DD26409DF700BF7819 /* GameScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706AC26409DF400BF7819 /* GameScene.cpp */; };
 		92B706DE26409DF700BF7819 /* GameScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92B706AC26409DF400BF7819 /* GameScene.cpp */; };
@@ -196,6 +202,10 @@
 		920B5E55264D13AB004D4089 /* Settings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Settings.cpp; sourceTree = "<group>"; };
 		920B5E5E264E0410004D4089 /* lightShader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = lightShader.frag; sourceTree = "<group>"; };
 		920B5E5F264E0411004D4089 /* lightShader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = lightShader.vert; sourceTree = "<group>"; };
+		9266991A2654B164005CB489 /* PositionalLight.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PositionalLight.cpp; sourceTree = "<group>"; };
+		9266991B2654B164005CB489 /* PositionalLight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PositionalLight.h; sourceTree = "<group>"; };
+		926699252654B186005CB489 /* ConeLight.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ConeLight.cpp; sourceTree = "<group>"; };
+		926699262654B186005CB489 /* ConeLight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConeLight.h; sourceTree = "<group>"; };
 		92B706AC26409DF400BF7819 /* GameScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameScene.cpp; sourceTree = "<group>"; };
 		92B706B026409DF400BF7819 /* LobbyScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyScene.h; sourceTree = "<group>"; };
 		92B706B126409DF400BF7819 /* Orb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Orb.cpp; sourceTree = "<group>"; };
@@ -541,14 +551,18 @@
 				92B706D626409DF600BF7819 /* SwapStation.h */,
 				92B706C026409DF500BF7819 /* World.cpp */,
 				92B706D826409DF700BF7819 /* World.h */,
+				92B707742641E43500BF7819 /* RayHandler.cpp */,
+				92B707752641E43500BF7819 /* RayHandler.h */,
 				92B707472640ABD100BF7819 /* Light.h */,
 				92B707462640ABD100BF7819 /* Light.cpp */,
 				92B707522640AC2C00BF7819 /* PointLight.h */,
 				92B707512640AC2C00BF7819 /* PointLight.cpp */,
 				92B7075A2640AC3B00BF7819 /* DirectionalLight.h */,
 				92B707592640AC3B00BF7819 /* DirectionalLight.cpp */,
-				92B707742641E43500BF7819 /* RayHandler.cpp */,
-				92B707752641E43500BF7819 /* RayHandler.h */,
+				9266991B2654B164005CB489 /* PositionalLight.h */,
+				9266991A2654B164005CB489 /* PositionalLight.cpp */,
+				926699262654B186005CB489 /* ConeLight.h */,
+				926699252654B186005CB489 /* ConeLight.cpp */,
 			);
 			name = Source;
 			path = ../source;
@@ -766,10 +780,12 @@
 				92B7074A2640ABD100BF7819 /* Light.cpp in Sources */,
 				92B706EA26409DF700BF7819 /* Projectile.cpp in Sources */,
 				92B7071126409DF700BF7819 /* NetworkData.cpp in Sources */,
+				9266991E2654B165005CB489 /* PositionalLight.cpp in Sources */,
 				92B707552640AC2C00BF7819 /* PointLight.cpp in Sources */,
 				92B7070B26409DF700BF7819 /* InputController.cpp in Sources */,
 				92B706E426409DF700BF7819 /* Player.cpp in Sources */,
 				92B7071A26409DF700BF7819 /* Booster.cpp in Sources */,
+				926699292654B186005CB489 /* ConeLight.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -799,10 +815,12 @@
 				92B707492640ABD100BF7819 /* Light.cpp in Sources */,
 				92B706E926409DF700BF7819 /* Projectile.cpp in Sources */,
 				92B7071026409DF700BF7819 /* NetworkData.cpp in Sources */,
+				9266991D2654B165005CB489 /* PositionalLight.cpp in Sources */,
 				92B707542640AC2C00BF7819 /* PointLight.cpp in Sources */,
 				92B7070A26409DF700BF7819 /* InputController.cpp in Sources */,
 				92B706E326409DF700BF7819 /* Player.cpp in Sources */,
 				92B7071926409DF700BF7819 /* Booster.cpp in Sources */,
+				926699282654B186005CB489 /* ConeLight.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -832,10 +850,12 @@
 				92B707482640ABD100BF7819 /* Light.cpp in Sources */,
 				92B706E826409DF700BF7819 /* Projectile.cpp in Sources */,
 				92B7070F26409DF700BF7819 /* NetworkData.cpp in Sources */,
+				9266991C2654B164005CB489 /* PositionalLight.cpp in Sources */,
 				92B707532640AC2C00BF7819 /* PointLight.cpp in Sources */,
 				92B7070926409DF700BF7819 /* InputController.cpp in Sources */,
 				92B706E226409DF700BF7819 /* Player.cpp in Sources */,
 				92B7071826409DF700BF7819 /* Booster.cpp in Sources */,
+				926699272654B186005CB489 /* ConeLight.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,12 +1,12 @@
 //
-//  PointLight.cpp
+//  ConeLight.cpp
 //  Box2DLights
 //
-//  Created by Zach Griffin on 5/3/21.
+//  Created by Zach Griffin on 5/18/21.
 //  Copyright © 2021 Game Design Initiative at Cornell. All rights reserved.
 //
 
-#include "PointLight.h"
+#include "ConeLight.h"
 #include <cmath>
 #include <math.h>
 #include "Globals.h"
@@ -17,7 +17,7 @@
 
 using namespace cugl;
 
-PointLight::~PointLight(void) {
+ConeLight::~ConeLight(void) {
     _sceneNode = nullptr;
 }
 
@@ -37,22 +37,22 @@ PointLight::~PointLight(void) {
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool PointLight::init(const Vec2 pos, int numRays, float radius) {
+bool ConeLight::init(const Vec2 pos, int numRays, float radius, float direction, float size) {
 //    WheelObstacle::init(pos, 1.0f);
 //    setSensor(true);
     Light::init(pos, numRays);
+    _direction = direction;
+    _size = size;
     _color = _defaultColor;
     _numRays = numRays;
     _radius = radius;
     _updateTimer = clock();
-    calculateLightMesh();
-    
     
     return true;
 }
 
 
-void PointLight::calculateLightMesh() {
+void ConeLight::calculateLightMesh() {
     mx.clear();
     my.clear();
     f.clear();
@@ -118,6 +118,5 @@ void PointLight::calculateLightMesh() {
         
         _lightIndx.push_back(0);
     }
-    
     
 }

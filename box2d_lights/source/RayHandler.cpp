@@ -60,25 +60,24 @@ bool RayHandler::init() {
     
     _vbo->attach(_shader);
     
-    
     return true;
 }
 
 
+//Adds a point light to list of lights
+//TODO: change so vert data add is in separate function to be updated each frame
 bool RayHandler::addPointLight(Vec2 vec, int numRays, float radius) {
     auto light = PointLight::alloc(vec, numRays, radius);
-    _world->addObstacle(light);
     light->setWorld(_world);
     light->calculateLightMesh();
     light->setDrawScale(_scale);
     
-    light->setDebugColor(Color4::YELLOW);
     
     auto verts = light->getVerts();
     auto indx = light->getIndices();
     
     for (int i = 0; i < verts.size(); i++) {
-        _vertData[_vertSize].pos = verts[i].pos;
+        _vertData[_vertSize].pos = verts[i].pos*light->getDrawScale();
         _vertData[_vertSize].color = verts[i].color;
         _vertData[_vertSize].frac = verts[i].frac;
         _vertSize++;
@@ -94,7 +93,7 @@ bool RayHandler::addPointLight(Vec2 vec, int numRays, float radius) {
     return true;
 }
 
-
+//Needed to draw vbo
 void RayHandler::pushToBuffer() {
     _vbo->loadVertexData(_vertData, _vertSize, GL_STREAM_DRAW);
     _vbo->loadIndexData(_indxData, _indxSize, GL_STREAM_DRAW);
@@ -112,14 +111,16 @@ void RayHandler::draw(const std::shared_ptr<SpriteBatch> &batch, const Mat4 &tra
     _vbo->bind();
     pushToBuffer();
     
+    //TODO: Fix, multiply by transform possibly
+    _shader->setUniformMat4("uPerspective", getScene()->getCamera()->getCombined());
+    
     GLuint index = 0;
     GLuint size = 0;
     
-    _shader->setUniformMat4("uPerspective", transform);
-    
     for (int i = 0; i < _lights.size(); i++) {
-        size = _lights[i]->getNumRays()+1;
+        size = (GLuint)_lights[i]->getIndices().size();
         _vbo->draw(GL_TRIANGLES, size, index);
+        
         index += size;
     }
     

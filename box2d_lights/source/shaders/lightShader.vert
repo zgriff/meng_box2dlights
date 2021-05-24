@@ -8,7 +8,7 @@ out vec2 outPosition;
 in  vec4 aColor;
 out vec4 outColor;
 
-// Texture coordinates
+// Frac dist from center
 in  float aFrac;
 out float outFrac;
 
@@ -21,8 +21,8 @@ uniform mat4 uPerspective;
 void main(void) {
     gl_Position = uPerspective*aPosition;
 //    outPosition = aPosition.xy; // Need untransformed for scissor
-//    outColor = s * quad_colors;
-    outColor = aFrac * aColor;
+    outColor = aColor;
+    outFrac = aFrac;
 }
 
 )"

@@ -28,16 +28,16 @@ public:
     float frac;
 };
 
-
-class Light : public cugl::physics2::WheelObstacle{
+//template <class T>
+class Light {
 protected:
     
     std::shared_ptr<cugl::scene2::PolygonNode> _sceneNode;
     
     /** The Box2D world */
     std::shared_ptr<cugl::physics2::ObstacleWorld> _world;
-    
-    const Color4 _defaultColor = Color4::RED;
+        
+    const Color4 _defaultColor = Color4::BLUE;
     
     Color4 _color;
     
@@ -45,20 +45,19 @@ protected:
     
     float _drawscale;
     
-    
-    bool _staticLight = false;
-    
-    bool _culled = false;
-    
-    bool _dirty = true;
-    
-    bool _ignoreBody = false;
+//
+//    bool _staticLight = false;
+//
+//    bool _culled = false;
+//
+//    bool _dirty = true;
+//
+//    bool _ignoreBody = false;
     
     int _numRays;
     int _numVerts;
     
     float _distance;
-    float _direction;
     float _colorF;
     float _softShadowLength = 2.5f;
     
@@ -66,34 +65,31 @@ protected:
     std::vector<float> mx;
     std::vector<float> my;
     std::vector<float> f;
-    
-    std::vector<float> _segments;
-    std::vector<SpriteVertex2> _segmentsMesh;
-    
+//
+//    std::vector<float> _segments;
+//    std::vector<SpriteVertex2> _segmentsMesh;
+//
     std::vector<float>  _endx;
     std::vector<float>  _endy;
     
+    std::vector<LightVert> _lightVerts;
+    std::vector<Uint32> _lightIndx;
     
     
-    Poly2 _poly;
-    Poly2 _polyLastFrame;
-    
-    Mesh<SpriteVertex2> _lightMesh;
-    Mesh<SpriteVertex2> _lightMeshLF;
-    Mesh<SpriteVertex2> _softShadowMesh;
-    Mesh<SpriteVertex2> _softShadowMeshLF;
+//
+//    Poly2 _poly;
+//    Poly2 _polyLastFrame;
+//
+//    Mesh<SpriteVertex2> _lightMesh;
+//    Mesh<SpriteVertex2> _lightMeshLF;
+//    Mesh<SpriteVertex2> _softShadowMesh;
+//    Mesh<SpriteVertex2> _softShadowMeshLF;
         
-    /** The blending equation for this texture */
-    GLenum _blendEquation;
-    /** The source factor for the blend function */
-    GLenum _srcFactor;
-    /** The destination factor for the blend function */
-    GLenum _dstFactor;
     
-    /** The gradient to use for this polygon */
-    std::shared_ptr<Gradient> _gradient;
-    /** The active gradient to use in the sprite batch pass */
-    std::shared_ptr<Gradient> _spriteGrad;
+//    /** The gradient to use for this polygon */
+//    std::shared_ptr<Gradient> _gradient;
+//    /** The active gradient to use in the sprite batch pass */
+//    std::shared_ptr<Gradient> _spriteGrad;
     
     clock_t _updateTimer;
     clock_t _updateRate = 0.005f * CLOCKS_PER_SEC;
@@ -119,7 +115,13 @@ public:
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    virtual bool init(const Vec2 pos, float radius);
+    virtual bool init(const Vec2 pos, int numRays){
+            _pos = pos;
+            _numRays = numRays;
+            _color = _defaultColor;
+//            _updateTimer = clock();
+            return true;
+        }
     
     
     /**
@@ -134,28 +136,11 @@ public:
      *
      * @return a new wheel object at the given point with no radius.
      */
-    static std::shared_ptr<Light> alloc(const Vec2 pos, int numRays, float radius) {
-        std::shared_ptr<Light> result = std::make_shared<Light>();
-        return (result->init(pos, 0.0f) ? result : nullptr);
-    }
+//    static std::shared_ptr<Light> alloc(const Vec2 pos, int numRays) {
+//        std::shared_ptr<Light> result = std::make_shared<Light>();
+//        return (result->init(pos, numRays) ? result : nullptr);
+//    }
     
-    /**
-     * Returns a new wheel object of the given radius.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
-     *
-     * @param  pos      Initial position in world coordinates
-     * @param  radius   The wheel radius
-     *
-     * @return a new wheel object of the given radius.
-     */
-    static std::shared_ptr<Light> alloc(const Vec2 pos, float radius) {
-        std::shared_ptr<Light> result = std::make_shared<Light>();
-        return (result->init(pos,radius) ? result : nullptr);
-    }
 
     
 #pragma mark -
@@ -169,7 +154,9 @@ public:
      *
      * @param scale The ratio of the swap station sprite to the physics body
      */
-    void setDrawScale(float scale);
+    void setDrawScale(float scale) {
+        _drawscale =  scale;
+    };
     
     /**
      * Returns the ratio of the swap station sprite to the physics body
@@ -196,21 +183,26 @@ public:
     
     std::shared_ptr<cugl::scene2::PolygonNode> getSceneNode() {return _sceneNode;}
     
+    Vec2 getPosition() {return _pos;}
+    
     
 //    void calculateLightMesh();
+//
+//    Mesh<SpriteVertex2> getLightMesh() {return _lightMesh;}
+//
+//    Mesh<SpriteVertex2> getShadowMesh() {return _softShadowMesh;}
     
-    Mesh<SpriteVertex2> getLightMesh() {return _lightMesh;}
+//    Poly2 getPoly() {return _poly;}
+//
+//    Poly2 getPolyLastFrame() {return _polyLastFrame;}
+//
+//    void setPolyLastFrame(Poly2 poly) {_polyLastFrame = poly;}
     
-    Mesh<SpriteVertex2> getShadowMesh() {return _softShadowMesh;}
+    std::vector<LightVert> getVerts() {return _lightVerts;}
     
-    Poly2 getPoly() {return _poly;}
+    std::vector<Uint32> getIndices() {return _lightIndx;}
     
-    Poly2 getPolyLastFrame() {return _polyLastFrame;}
-    
-    void setPolyLastFrame(Poly2 poly) {_polyLastFrame = poly;}
-    
-    std::vector<float> getSegments() {return _segments;}
-    
+        
     
 #pragma mark -
 #pragma mark Rendering
@@ -231,10 +223,9 @@ public:
     
     void initializeLightMesh();
     
-    virtual Mesh<SpriteVertex2> calculateLightMesh();
+    void calculateLightMesh();
     
     std::function<float(b2Fixture*, const Vec2, const Vec2, float)> ray = [&](b2Fixture* fix, const Vec2 point, const Vec2 normal, float fraction) {
-        if (fix->GetBody() == getBody()) return -1.0f;
         
         mx[m_index] = point.x;
         my[m_index] = point.y;
@@ -246,14 +237,24 @@ public:
     /**
      * Destroys this level, releasing all resources.
      */
-    virtual ~Light(void);
+    virtual ~Light(void)  {
+        dispose();
+    }
     
-    void dispose();
+    void dispose() {
+        mx.clear();
+        my.clear();
+        f.clear();
+        _endx.clear();
+        _endy.clear();
+        _lightVerts.clear();
+        _lightIndx.clear();
+    };
     
     /*
      @param delta Timing values from parent loop
     */
-    virtual void update(float delta) override;
+    void update(float delta);
 
     
 };
