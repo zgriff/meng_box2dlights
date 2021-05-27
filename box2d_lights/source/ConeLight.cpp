@@ -60,6 +60,8 @@ void ConeLight::update(float delta, std::shared_ptr<cugl::physics2::ObstacleWorl
 
 bool ConeLight::calculateEndpoints() {
     
+    CULog("cone pos: %f , %f ", getPosition().x,getPosition().y);
+    
     float sinarr[_numRays];
     float cosarr[_numRays];
     

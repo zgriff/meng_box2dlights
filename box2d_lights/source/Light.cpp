@@ -48,13 +48,15 @@ void Light::dispose() {
 }
 
 /**
- * Initializes a new physics object at the given point
+ * Initializes a new Light object at the given point
  *
  * @param  vec  Initial position in world coordinates
+ * @param  numRays  Number of rays used to calculate light mesh
+ * @param  color  Color of the light - White by default
  *
  * @return  true if the Light is initialized properly, false otherwise.
  */
-bool Light::init(const Vec2 pos, const int numRays) {
+bool Light::init(const Vec2 pos, const int numRays, const Color4 color) {
     // Object has yet to be deactivated
 //    _remove = false;
     
@@ -68,7 +70,7 @@ bool Light::init(const Vec2 pos, const int numRays) {
     
     _pos = pos;
     _numRays = numRays;
-    _color = _defaultColor;
+    _color = color;
     
     return true;
 }
@@ -92,52 +94,6 @@ void Light::setBodyState(const b2Body& body) {
     _bodyinfo.gravityScale  = body.GetGravityScale();
     _bodyinfo.angularDamping = body.GetAngularDamping();
     _bodyinfo.linearDamping  = body.GetLinearDamping();
-}
-
-#pragma mark -
-#pragma mark Physics Methods
-
-/**
- * Creates the physics Body(s) for this object, adding them to the world.
- *
- * Implementations of this method should NOT retain ownership of the
- * Box2D world. That is a tight coupling that we should avoid.
- *
- * @param world Box2D world to store body
- *
- * @return true if object allocation succeeded
- */
-bool Light::activatePhysics(b2World& world) {
-    // Make a body, if possible
-    _bodyinfo.active = true;
-    _body = world.CreateBody(&_bodyinfo);
-    _body->SetUserData((void*)this);
-    
-    // Only initialize if a body was created.
-    if (_body != nullptr) {
-        return true;
-    }
-    
-    _bodyinfo.active = false;
-    return false;
-}
-
-/**
- * Destroys the physics Body(s) of this object if applicable.
- *
- * This removes the body from the Box2D world.
- *
- * @param world Box2D world that stores body
- */
-void Light::deactivatePhysics(b2World& world) {
-    // Should be good for most (simple) applications.
-    if (_body != nullptr) {
-        // Snapshot the values
-        setBodyState(*_body);
-        world.DestroyBody(_body);
-        _body = nullptr;
-        _bodyinfo.active = false;
-    }
 }
 
 

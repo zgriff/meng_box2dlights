@@ -27,6 +27,8 @@ namespace cugl {
     namespace b2dlights {
 
     
+    
+
 class LightVert {
 public:
     Vec2 pos;
@@ -36,6 +38,9 @@ public:
 
 class Light {
 protected:
+    /** The default color for lights */
+    const Color4 defaultColor = Color4::WHITE;
+    
     /** Stores the body information for this shape */
     b2BodyDef _bodyinfo;
     /** The physics body for Box2D. */
@@ -61,40 +66,36 @@ protected:
     
     std::shared_ptr<cugl::scene2::PolygonNode> _sceneNode;
     
-    /** Shape information for this box */
-    const Color4 _defaultColor = Color4::BLUE;
-    /** Shape information for this box */
+    /** The color for this light  */
     Color4 _color;
-    /** Shape information for this box */
+    /** The position of this light in world coordinates */
     Vec2 _pos;
-    /** Shape information for this box */
-    float _drawscale;
     
-    /** Shape information for this box */
+    /** The number of rays used in raycasting when calculating this light's mesh */
     int _numRays;
-    /** Shape information for this box */
+    /** The number of vertices in this light's mesh */
     int _numVerts;
         
-    /** Shape information for this box */
+    /** The iterator used during raycasting */
     int m_index = 0;
-    /** Shape information for this box */
+    /** A vector populated with the x-values of  endpoints after raycasting */
     std::vector<float> mx;
-    /** Shape information for this box */
+    /** A vector populated with the y-values of  endpoints after raycasting */
     std::vector<float> my;
-    /** Shape information for this box */
+    /** A vector populated with the fraction of raycasted endpoint / designated endpoint */
     std::vector<float> f;
 
-    /** Shape information for this box */
+    /** A vector populated with the x-values of ray endpoints before raycasting */
     std::vector<float>  _endX;
-    /** Shape information for this box */
+    /** A vector populated with the y-values of ray endpoints before raycasting */
     std::vector<float>  _endY;
     
-    /** Shape information for this box */
+    /** A vector populated with each vertex that comprises the light mesh*/
     std::vector<LightVert> _lightVerts;
-    /** Shape information for this box */
+    /** A vector populated with indices used to for triangulation while drawing the mesh*/
     std::vector<Uint32> _lightIndx;
     
-    /** Shape information for this box */
+    /** Whether this light needs to recalculate it's endpoints (_endX, _endY) */
     bool _dirty;
     
 
@@ -125,7 +126,7 @@ protected:
 #pragma mark Constructors
 public:
     /**
-     * Creates a new physics object at the origin.
+     * Creates a new light object at the origin.
      *
      * NEVER USE A CONSTRUCTOR WITH NEW. If you want to allocate an object on
      * the heap, use one of the static constructors instead (in this case, in
@@ -134,10 +135,10 @@ public:
     Light(void);
     
     /**
-     * Deletes this physics object and all of its resources.
+     * Deletes this light object and all of its resources.
      *
      * We have to make the destructor public so that we can polymorphically
-     * delete physics objects.
+     * delete light objects.
      *
      * A non-default destructor is necessary since we must release all
      * claims on scene graph nodes.
@@ -147,70 +148,96 @@ public:
     void dispose();
     
     /**
-     * Initializes a new physics object at the origin.
+     * Initializes a new light object at the origin.
      *
      * @return true if the Light is initialized properly, false otherwise.
      */
-    virtual bool init() { return init(Vec2::ZERO, 50); }
+    virtual bool init() { return init(Vec2::ZERO, 100); }
     
     /**
-     * Initializes a new light object of the given dimensions.
+     * Initializes a new light object at the given point
+     *
+     * @param  pos  Initial position in world coordinates
+     *
+     * @return true if the light is initialized properly, false otherwise.
+     */
+    virtual bool init(const Vec2 pos) {
+        return init(pos, 100, defaultColor);
+    }
+    
+    /**
+     * Initializes a new light object at the given point
+     *
+     * @param  pos  Initial position in world coordinates
+     * @param  numRays  Number of rays used to calculate light mesh (100 by default)
+     *
+     * @return true if the light is initialized properly, false otherwise.
+     */
+    virtual bool init(const Vec2 pos, const int numRays) {
+        return init(pos, numRays, defaultColor);
+    }
+    
+    
+    /**
+     * Initializes a new light object at the given location.
      *
      * The scene graph is completely decoupled from the physics system.
      * The node does not have to be the same size as the physics body. We
      * only guarantee that the scene graph node is positioned correctly
      * according to the drawing scale.
      *
-     * @param  pos      Initial position in world coordinates
-     * @param  radius   The wheel radius
+     * @param  pos  Initial position in world coordinates ((0,0) by default)
+     * @param  numRays  Number of rays used to calculate light mesh (100 by default)
+     * @param  color  Color of the light (White by default)
      *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @return  true if the light is initialized properly, false otherwise.
      */
-    virtual bool init(const Vec2 pos, const int numRays);
+    virtual bool init(const Vec2 pos, const int numRays, const Color4 color);
     
-//    /**
-//     * Initializes a new physics object at the given point
-//     *
-//     * @param  vec  Initial position in world coordinates
-//     *
-//     * @return true if the Light is initialized properly, false otherwise.
-//     */
-//    virtual bool init(const Vec2 vec);
+
     
 #pragma mark -
 #pragma mark Light Getters and Setters
     
+    /**
+     * Sets the color of the light to the given rgba value.
+     *
+     * @param  color  The desired color in Color4
+     */
     void setColor(Color4 color) {_color = color;}
     
+    /**
+     * Sets the color of the light to the given rgba value.
+     *
+     * @param  r  The red value
+     * @param  g  The green value
+     * @param  b  The blue value
+     * @param  a  The alpha value
+     */
     void setColor(float r, float g, float b, float a) {
         _color = Color4(r,g,b,a);
     }
     
+    /**
+     * Sets the number of rays to use when calculating the light mesh.
+     *
+     * The higher the number,  the crisper the shape. Too high of a number
+     * will cause performance to suffer.
+     *
+     * @param  num  Number of rays to use
+     */
     void setNumRays(int num) {_numRays = num;}
     
+    /**
+     * Returns the number of rays used to calculate the light mesh.
+     *
+     * @return  Number of rays used
+     */
     int getNumRays() {return _numRays;}
     
-    std::shared_ptr<cugl::scene2::PolygonNode> getSceneNode() {return _sceneNode;}
     
-    Vec2 getPosition() {return _pos;}
+//    Vec2 getPosition() {return _pos;}
     
-    /**
-     * Sets the ratio of the swap station sprite to the physics body
-     *
-     *
-     * @param scale The ratio of the swap station sprite to the physics body
-     */
-    void setDrawScale(float scale) {
-        _drawscale =  scale;
-    };
-    
-    /**
-     * Returns the ratio of the swap station sprite to the physics body
-     *
-     *
-     * @return the ratio of the swap station sprite to the physics body
-     */
-    float getDrawScale() const { return _drawscale; }
     
     std::vector<LightVert> getVerts() {return _lightVerts;}
     
@@ -802,30 +829,6 @@ public:
      * removing it from the world.
      */
     void setBodyState(const b2Body& body);
-
-    
-    
-//#pragma mark -
-//#pragma mark Garbage Collection
-//    /**
-//     * Returns true if our object has been flagged for garbage collection
-//     *
-//     * A garbage collected object will be removed from the physics world at
-//     * the next time step.
-//     *
-//     * @return true if our object has been flagged for garbage collection
-//     */
-//    bool isRemoved() const { return _remove; }
-//    
-//    /**
-//     * Sets whether our object has been flagged for garbage collection
-//     *
-//     * A garbage collected object will be removed from the physics world at
-//     * the next time step.
-//     *
-//     * @param value  whether our object has been flagged for garbage collection
-//     */
-//    void markRemoved(bool value) { _remove = value; }
     
     
 #pragma mark -
@@ -841,28 +844,6 @@ public:
      */
     virtual b2Body* getBody() { return _body; }
     
-    /**
-     * Creates the physics Body(s) for this object, adding them to the world.
-     *
-     * Implementations of this method should NOT retain ownership of the
-     * Box2D world. That is a tight coupling that we should avoid.
-     *
-     * @param world Box2D world to store body
-     *
-     * @return true if object allocation succeeded
-     */
-    virtual bool activatePhysics(b2World& world);
-    
-    /**
-     * Destroys the physics Body(s) of this object if applicable.
-     *
-     * This removes the body from the Box2D world.
-     *
-     * @param world Box2D world that stores body
-     */
-    virtual void deactivatePhysics(b2World& world);
-    
-
     
 #pragma mark -
 #pragma mark Update Methods
