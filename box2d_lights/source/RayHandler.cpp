@@ -24,7 +24,7 @@ const std::string lightFragShader =
 ;
 
 
-using namespace cugl;
+using namespace cugl::b2dlights;
 
 RayHandler::~RayHandler(void) {
     dispose();
@@ -68,10 +68,11 @@ bool RayHandler::init() {
 //TODO: change so vert data add is in separate function to be updated each frame
 bool RayHandler::addPointLight(Vec2 vec, int numRays, float radius) {
     auto light = PointLight::alloc(vec, numRays, radius);
-    light->setWorld(_world);
-    light->calculateLightMesh();
+//    light->setWorld(_world);
+    light->calculateLightMesh(_world);
     light->setDrawScale(_scale);
     
+    CULog("point light contains: %i", light->contains(vec.x+1, vec.y+1));
     
     auto verts = light->getVerts();
     auto indx = light->getIndices();
@@ -93,13 +94,98 @@ bool RayHandler::addPointLight(Vec2 vec, int numRays, float radius) {
     return true;
 }
 
+
+// a point light to list of lights
+//TODO: change so vert data add is in separate function to be updated each frame
+bool RayHandler::addConeLight(Vec2 vec, int numRays, float radius, float direction, float size) {
+    auto light = ConeLight::alloc(vec, numRays, radius, direction, size);
+//    light->setWorld(_world);
+    light->calculateLightMesh(_world);
+    light->setDrawScale(_scale);
+    CULog("cone contains: %f, %f : %i", vec.x-1,vec.y-1,light->contains(vec.x-1, vec.y-1));
+    
+    auto verts = light->getVerts();
+    auto indx = light->getIndices();
+    
+    for (int i = 0; i < verts.size(); i++) {
+        _vertData[_vertSize].pos = verts[i].pos*light->getDrawScale();
+        _vertData[_vertSize].color = verts[i].color;
+        _vertData[_vertSize].frac = verts[i].frac;
+        _vertSize++;
+    }
+    
+    for (int j = 0; j < indx.size(); j++) {
+        _indxData[_indxSize] = indx[j];
+        _indxSize++;
+    }
+        
+    _lights.push_back(light);
+    
+    return true;
+}
+
+// a directional light to list of lights
+//TODO: change so vert data add is in separate function to be updated each frame
+bool RayHandler::addDirectionalLight(Vec2 vec, int numRays, float direction) {
+    auto light = DirectionalLight::alloc(vec, numRays, direction, _world);
+//    light->setWorld(_world);
+    light->calculateLightMesh(_world);
+    light->setDrawScale(_scale);
+    
+    CULog("directional light contains: %f, %f : %i", 0.1f,0.0f,light->contains(0.1f, 0.0f));
+    CULog("directional light contains: %f, %f : %i", -5.0f, 5.0f,light->contains(-5.0f, 5.0f));
+    
+    auto verts = light->getVerts();
+    auto indx = light->getIndices();
+    
+    for (int i = 0; i < verts.size(); i++) {
+        _vertData[_vertSize].pos = verts[i].pos*light->getDrawScale();
+        _vertData[_vertSize].color = verts[i].color;
+        _vertData[_vertSize].frac = verts[i].frac;
+        _vertSize++;
+    }
+    
+    for (int j = 0; j < indx.size(); j++) {
+        _indxData[_indxSize] = indx[j];
+        _indxSize++;
+    }
+        
+    _lights.push_back(light);
+    
+    return true;
+}
+
+
+void RayHandler::update(float delta) {
+    
+    for (auto it = _lights.begin(); it != _lights.end(); it++) {
+        (*it)->update(delta,_world);
+        auto verts = (*it)->getVerts();
+        auto indx = (*it)->getIndices();
+        
+        for (int i = 0; i < verts.size(); i++) {
+            _vertData[_vertSize].pos = verts[i].pos*(*it)->getDrawScale();
+            _vertData[_vertSize].color = verts[i].color;
+            _vertData[_vertSize].frac = verts[i].frac;
+            _vertSize++;
+        }
+        
+        for (int j = 0; j < indx.size(); j++) {
+            _indxData[_indxSize] = indx[j];
+            _indxSize++;
+        }
+    }
+    
+}
+
+
 //Needed to draw vbo
 void RayHandler::pushToBuffer() {
     _vbo->loadVertexData(_vertData, _vertSize, GL_STREAM_DRAW);
     _vbo->loadIndexData(_indxData, _indxSize, GL_STREAM_DRAW);
     
-//    _indxSize = 0;
-//    _vertSize = 0;
+    _indxSize = 0;
+    _vertSize = 0;
 }
 
 
@@ -119,7 +205,8 @@ void RayHandler::draw(const std::shared_ptr<SpriteBatch> &batch, const Mat4 &tra
     
     for (int i = 0; i < _lights.size(); i++) {
         size = (GLuint)_lights[i]->getIndices().size();
-        _vbo->draw(GL_TRIANGLES, size, index);
+        
+        _vbo->draw(GL_TRIANGLE_FAN, size, index);
         
         index += size;
     }

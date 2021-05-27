@@ -58,7 +58,7 @@ void World::setRootNode(const std::shared_ptr<scene2::SceneNode>& root, float sc
     _root->addChild(_worldNode,0);
     _root->addChild(_debugNode,1);
 
-    _rayHandler = RayHandler::alloc();
+    _rayHandler = cugl::b2dlights::RayHandler::alloc();
     _rayHandler->setWorld(_physicsWorld);
     _rayHandler->setScale(_scale);
     
@@ -85,12 +85,12 @@ void World::setRootNode(const std::shared_ptr<scene2::SceneNode>& root, float sc
         _worldNode->addChild(sprite,0);
     }
     
-    for(auto it = _walls.begin(); it != _walls.end(); ++it) {
-        std::shared_ptr<physics2::PolygonObstacle> wall = *it;
-        _physicsWorld->addObstacle(wall);
-        wall->setDebugScene(_debugNode);
-        wall->setName("wall");
-    }
+//    for(auto it = _walls.begin(); it != _walls.end(); ++it) {
+//        std::shared_ptr<physics2::PolygonObstacle> wall = *it;
+//        _physicsWorld->addObstacle(wall);
+//        wall->setDebugScene(_debugNode);
+//        wall->setName("wall");
+//    }
     
     _currEggCount = 0;
     _totalEggCount = 0;
@@ -174,8 +174,11 @@ void World::setRootNode(const std::shared_ptr<scene2::SceneNode>& root, float sc
     
     _worldNode->addChild(_rayHandler,1);
 
-    _rayHandler->addPointLight(_eggSpawns[0]-Vec2(0.0f,5.0f), 25, 10.0f);
-    _rayHandler->addPointLight(_eggSpawns[0]-Vec2(0.0f,-5.0f), 25, 10.0f);
+//    _rayHandler->addDirectionalLight(Vec2(0.0f,0.0f), 1000, 180.0f);
+    _rayHandler->addPointLight(_eggSpawns[0]-Vec2(0.0f,-5.0f), 100, 10.0f);
+    _rayHandler->addConeLight(_eggSpawns[0]-Vec2(0.0f,5.0f), 100, 10.0f, 45.0f, 90.0f);
+//    _rayHandler->getLight(0)->setDebugScene(_debugNode);
+//    _rayHandler->getLight(0)->setDebugColor(Color4::BLACK);
     
     
     Vec2 playerPos = ((Vec2)PLAYER_POS);

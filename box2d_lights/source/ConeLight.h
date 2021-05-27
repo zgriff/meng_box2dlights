@@ -13,31 +13,97 @@
 #include <cugl/cugl.h>
 #include "PositionalLight.h"
 
-using namespace cugl;
+namespace cugl {
+
+    namespace b2dlights {
 
 class ConeLight : public PositionalLight {
 protected:
 
-    
-    float _radius;
+    /** Shape information for this box */
     float _direction;
-    float _size;
+    /** Shape information for this box */
+    float _coneDegree;
     
     
 public:
 #pragma mark -
 #pragma mark Getters and Setters
     
-//    void setColor(Color4 color) {_color = color;}
-//    
-//    void setColor(float r, float g, float b, float a) {
-//        _color = Color4(r,g,b,a);
-//    }
-//        
-//    
-//    std::vector<LightVert> getVerts() {return _lightVerts;}
-//    
-//    std::vector<Uint32> getIndices() {return _lightIndx;}
+    /**
+     * Returns a new point light object at the given point with no radius.
+     *
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
+     *
+     * @param  pos  Initial position in world coordinates
+     * @param  numRays  Number of rays in the light
+     * @param  radius  Radius of the point light circle
+     *
+     * @return a new point light object at the given point with no radius.
+     */
+    float getDirection() {return _direction;}
+    
+    /**
+     * Returns a new point light object at the given point with no radius.
+     *
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
+     *
+     * @param  pos  Initial position in world coordinates
+     * @param  numRays  Number of rays in the light
+     * @param  radius  Radius of the point light circle
+     *
+     * @return a new point light object at the given point with no radius.
+     */
+    void setDirection(float dir) {
+        _direction = dir;
+        _dirty = true;
+    }
+    
+    /**
+     * Returns a new point light object at the given point with no radius.
+     *
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
+     *
+     * @param  pos  Initial position in world coordinates
+     * @param  numRays  Number of rays in the light
+     * @param  radius  Radius of the point light circle
+     *
+     * @return a new point light object at the given point with no radius.
+     */
+    float getConeDegree() {return _coneDegree;}
+    
+    /**
+     * Returns a new point light object at the given point with no radius.
+     *
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
+     *
+     * @param  pos  Initial position in world coordinates
+     * @param  numRays  Number of rays in the light
+     * @param  radius  Radius of the point light circle
+     *
+     * @return a new point light object at the given point with no radius.
+     */
+    void setConeDegree(float dir) {
+        if (dir > 0.01f) {
+            _direction = dir;
+        } else {
+            _direction = 0.01f;
+        }
+        _dirty = true;
+    }
+    
     
     
     
@@ -58,7 +124,7 @@ public:
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    virtual bool init(const Vec2 pos, int numRays, float radius, float direction, float size);
+    virtual bool init(const Vec2 pos, int numRays, float radius, float direction, float degreeee);
     
     
     /**
@@ -75,18 +141,46 @@ public:
      *
      * @return a new point light object at the given point with no radius.
      */
-    static std::shared_ptr<ConeLight> alloc(const Vec2 pos, int numRays, float radius, float direction, float size) {
+    static std::shared_ptr<ConeLight> alloc(const Vec2 pos, int numRays, float radius, float direction, float degreee) {
         std::shared_ptr<ConeLight> result = std::make_shared<ConeLight>();
-        return (result->init(pos, numRays, radius, direction, size) ? result : nullptr);
+        return (result->init(pos, numRays, radius, direction, degreee) ? result : nullptr);
     }
     
-    
-    virtual void calculateLightMesh() ;
-    
-    
+    /**
+     * Returns a new point light object at the given point with no radius.
+     *
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
+     *
+     * @param  pos  Initial position in world coordinates
+     * @param  numRays  Number of rays in the light
+     * @param  radius  Radius of the point light circle
+     *
+     * @return a new point light object at the given point with no radius.
+     */
+    bool calculateEndpoints();
     
     /**
-     * Destroys this level, releasing all resources.
+     * Returns a new point light object at the given point with no radius.
+     *
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
+     *
+     * @param  pos  Initial position in world coordinates
+     * @param  numRays  Number of rays in the light
+     * @param  radius  Radius of the point light circle
+     *
+     * @return a new point light object at the given point with no radius.
+     */
+    virtual void update(float delta, std::shared_ptr<cugl::physics2::ObstacleWorld> world) override;
+
+    
+    /**
+     * Destroys this light, releasing all resources.
      */
     virtual ~ConeLight(void);
     
@@ -94,4 +188,9 @@ public:
     
     
 };
+    
+    }
+
+}
+
 #endif /* ConeLight_h */

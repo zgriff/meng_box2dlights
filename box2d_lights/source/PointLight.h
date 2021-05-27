@@ -9,23 +9,15 @@
 #ifndef PointLight_h
 #define PointLight_h
 
-#include <stdio.h>
-#include <cugl/cugl.h>
 #include "PositionalLight.h"
 
-using namespace cugl;
+namespace cugl {
+
+    namespace b2dlights {
 
 class PointLight : public PositionalLight {
 protected:
 
-    
-    float _radius;
-//    float _direction;
-//    float _colorF;
-//    float _softShadowLength = 2.5f;
-    
-
-    
     
 public:
 #pragma mark -
@@ -34,10 +26,10 @@ public:
     
     
 #pragma mark -
-#pragma mark Construct Destruct
+#pragma mark Constructors and Destructors
     
     /**
-     * Initializes a new wheel object of the given dimensions.
+     * Initializes a new light object of the given dimensions.
      *
      * The scene graph is completely decoupled from the physics system.
      * The node does not have to be the same size as the physics body. We
@@ -50,7 +42,7 @@ public:
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    virtual bool init(const Vec2 pos, int numRays, float radius);
+    virtual bool init(const Vec2 pos, int numRays, float radius) override;
     
     
     /**
@@ -73,20 +65,33 @@ public:
     }
     
     
-    virtual void calculateLightMesh();
-    
-
-    
-    
     /**
      * Destroys this level, releasing all resources.
      */
     virtual ~PointLight(void);
     
+    
     void dispose();
+    
+    
+#pragma mark -
+#pragma mark Update
+    
+    
+    virtual void update(float delta, std::shared_ptr<cugl::physics2::ObstacleWorld> world) override;
+    
+    
+#pragma mark -
+#pragma mark Light Mesh Generation
+    
+    
+    bool calculateEndpoints();
     
     
 };
 
+    }
+
+}
 
 #endif /* PointLight_h */

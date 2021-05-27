@@ -9,13 +9,8 @@
 #include "ConeLight.h"
 #include <cmath>
 #include <math.h>
-#include "Globals.h"
 
-
-#define MIN_RAYS        50
-
-
-using namespace cugl;
+using namespace cugl::b2dlights;
 
 ConeLight::~ConeLight(void) {
     _sceneNode = nullptr;
@@ -37,86 +32,48 @@ ConeLight::~ConeLight(void) {
  *
  * @return  true if the obstacle is initialized properly, false otherwise.
  */
-bool ConeLight::init(const Vec2 pos, int numRays, float radius, float direction, float size) {
-//    WheelObstacle::init(pos, 1.0f);
-//    setSensor(true);
-    Light::init(pos, numRays);
+bool ConeLight::init(const Vec2 pos, int numRays, float radius, float direction, float degree) {
+    
+    PositionalLight::init(pos, numRays, radius);
+    
     _direction = direction;
-    _size = size;
-    _color = _defaultColor;
-    _numRays = numRays;
-    _radius = radius;
-    _updateTimer = clock();
+    _coneDegree = degree;
+    
+    calculateEndpoints();
     
     return true;
 }
 
 
-void ConeLight::calculateLightMesh() {
-    mx.clear();
-    my.clear();
-    f.clear();
-    _lightVerts.clear();
-    _lightIndx.clear();
+void ConeLight::update(float delta, std::shared_ptr<cugl::physics2::ObstacleWorld> world) {
     
-    Vec2 start = getPosition();
+    if (_dirty) calculateEndpoints();
+    
+    _dirty = false;
+    
+    calculateLightMesh(world);
+}
 
-    Vec2 tmpEnd;
+
+#pragma mark -
+#pragma mark Light Mesh Calculations
+
+bool ConeLight::calculateEndpoints() {
     
     float sinarr[_numRays];
     float cosarr[_numRays];
-    float endX[_numRays];
-    float endY[_numRays];
     
-    //Divide circle around light into equal parts
-    float angleNum = 360.0f / (_numRays - 1.0f);
     for (int i = 0; i < _numRays; i++) {
-        float angle = angleNum * i * (M_PI / 180) ;
+        //Divide cone into equal parts
+        float angle = (_direction + (0.5f * _coneDegree) - (_coneDegree * i / (_numRays - 1.0f))) * (M_PI / 180);
+        
         sinarr[i] = sin(angle);
         cosarr[i] = cos(angle);
-        endX[i] = _radius * cosarr[i];
-        endY[i] = _radius * sinarr[i];
+        
+        _endX.push_back(_radius * cosarr[i]);
+        _endY.push_back(_radius * sinarr[i]);
     }
     
-    for (int i = 0; i < _numRays; i++) {
-        m_index = i;
-        f.push_back(1.0f);
-        tmpEnd.x = endX[i] + start.x;
-        mx.push_back(tmpEnd.x);
-        tmpEnd.y = endY[i] + start.y;
-        my.push_back(tmpEnd.y);
-        if (_world != nullptr) {
-            _world->rayCast(ray, start, tmpEnd);
-        }
-    }
-    
-    //Start with center of light, then iterate through all outside verts
-    LightVert light;
-    
-    light.pos = Vec2(start.x,start.y);
-    light.color = _color;
-    light.frac = 1.0f;
-    
-    _lightVerts.push_back(light);
-            
-    for (int i = 0; i < _numRays; i++) {
-        
-        light.pos = Vec2(mx[i],my[i]);
-        light.color = _color;
-        light.frac = 1.0f - f[i];
-        
-        _lightVerts.push_back(light);
-        
-        _lightIndx.push_back(i+1);
-        
-        //if last, _lightIndxex to first vert on outside of poly (0 _lightIndxex is center)
-        if (i == _numRays-1) {
-            _lightIndx.push_back(1);
-        } else {
-            _lightIndx.push_back(i+2);
-        }
-        
-        _lightIndx.push_back(0);
-    }
-    
+    return true;
 }
+    

@@ -36,7 +36,7 @@ protected:
     
     Vec2 _sceneSize;
     
-    std::shared_ptr<RayHandler> _rayHandler;
+    std::shared_ptr<cugl::b2dlights::RayHandler> _rayHandler;
     
     /** Reference to the physics root of the scene graph */
     std::shared_ptr<cugl::scene2::SceneNode> _worldNode;
@@ -338,6 +338,10 @@ public:
     
     std::shared_ptr<cugl::physics2::ObstacleWorld> getPhysicsWorld(){
         return _physicsWorld;
+    }
+    
+    std::shared_ptr<cugl::b2dlights::RayHandler> getRayHandler(){
+        return _rayHandler;
     }
     
     const Vec2& getSceneSize() const {return _sceneSize;}

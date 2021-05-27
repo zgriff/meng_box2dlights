@@ -352,6 +352,8 @@ void GameScene::update(float timestep) {
         }
     }
     _world->getPhysicsWorld()->update(timestep);
+    
+    _world->getRayHandler()->update(timestep);
 
     auto playPos = _player->getSceneNode()->getPosition();
     playPos += _player->getLinearVelocity().scale(40.0 / pow(max(_player->getLinearVelocity().length(), .000001f), .35));
