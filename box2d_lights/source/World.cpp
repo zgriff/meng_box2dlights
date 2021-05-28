@@ -174,9 +174,9 @@ void World::setRootNode(const std::shared_ptr<scene2::SceneNode>& root, float sc
     
     _worldNode->addChild(_rayHandler,1);
 
-//    _rayHandler->addDirectionalLight(Vec2(0.0f,0.0f), 500, 180.0f);
+    _rayHandler->addDirectionalLight(500, 180.0f);
 //    _rayHandler->addPointLight(_playerSpawns[0], 5000, 50.0f);
-    _rayHandler->addConeLight(_eggSpawns[0]-Vec2(0.0f,5.0f), 100, 100.0f, 45.0f, 90.0f);
+//    _rayHandler->addConeLight(_eggSpawns[0]-Vec2(0.0f,5.0f), 100, 100.0f, 45.0f, 90.0f);
 //    _rayHandler->getLight(0)->setDebugScene(_debugNode);
 //    _rayHandler->getLight(0)->setDebugColor(Color4::BLACK);
     

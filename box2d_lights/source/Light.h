@@ -173,7 +173,7 @@ public:
 #pragma mark -
 #pragma mark Constructors
     /**
-     * Creates a new light object at the origin.
+     * Creates a new light object.
      *
      * NEVER USE A CONSTRUCTOR WITH NEW. If you want to allocate an object on
      * the heap, use one of the static constructors instead (in this case, in

@@ -149,10 +149,6 @@ public:
      * The node does not have to be the same size as the physics body. We
      * only guarantee that the scene graph node is positioned correctly
      * according to the drawing scale.
-     *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
      */
     void dispose() override;
     
@@ -160,48 +156,35 @@ public:
 #pragma mark Getters and Setters
     
     /**
-     * Initializes a new box object at the given point with no size.
+     * Returns a pointer to a light in the scene.
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * @param  lid  The id of the light (currently just order instantiated in)
      *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @return  a pointer to a light
      */
     std::shared_ptr<Light> getLight(int lid){
         return _lights[lid];
     }
     
     /**
-     * Initializes a new box object at the given point with no size.
+     * Sets the current physics world of the scene.
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * The world must be passed into each light when creating the mesh.
+     * We want to be sure to decouple the light from the world.
      *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @param  world  The current physics world
      */
     void setWorld(std::shared_ptr<cugl::physics2::ObstacleWorld> world) {
         _world = world;
     }
     
     /**
-     * Initializes a new box object at the given point with no size.
+     * Sets the drawing scale of this scene node.
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * The drawing scale is used when converting the light mesh coordinates
+     * to vertex data to be rendered by the shader.
      *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @param scale  Drawing scale of the scene (box2d to scene coordinates)
      */
     void setScale(float scale) {_scale = scale;}
     
@@ -210,109 +193,96 @@ public:
 #pragma mark Light Creators
     
     /**
-     * Initializes a new point light object at the given point
+     * Instantiates a new point light object at the given point
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * After allocating the light, you must call calculateLightMesh on the current
+     * physics world before trying to draw.
      *
-     * @param  x  Initial x position in world coordinates
-     * @param  y  Initial y position in world coordinates
-     * @param  numRays  Number of rays for light to use when raycasting
-     * @param  radius  Radius of the point light
+     * @param x  Initial x position in world coordinates
+     * @param y  Initial y position in world coordinates
+     * @param numRays  Number of rays for light to use when raycasting
+     * @param radius  Radius of the point light
      *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @return  true if the light is instantiated properly, false otherwise.
      */
     bool addPointLight(Vec2 vec, int numRays, float radius);
     
     /**
-     * Initializes a new point light object at the given point
+     * Instantiates a new point light object at the given point
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * After allocating the light, you must call calculateLightMesh on the current
+     * physics world before trying to draw.
      *
-     * @param  x  Initial x position in world coordinates
-     * @param  y  Initial y position in world coordinates
-     * @param  numRays  Number of rays for light to use when raycasting
-     * @param  radius  Radius of the point light
+     * @param x  Initial x position in world coordinates
+     * @param y  Initial y position in world coordinates
+     * @param numRays  Number of rays for light to use when raycasting
+     * @param radius  Radius of the point light
      *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @return  true if the light is instantiated properly, false otherwise.
      */
     bool addPointLight(float x, float y, int numRays, float radius) {
         return addPointLight(Vec2(x,y),numRays,radius);
     };
     
     /**
-     * Initializes a new cone light object at the given point
+     * Instantiates a new cone light object at the given point
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * After allocating the light, you must call calculateLightMesh on the current
+     * physics world before trying to draw.
      *
-     * @param  x  Initial x position in world coordinates
-     * @param  y  Initial y position in world coordinates
-     * @param  numRays  Number of rays for light to use when raycasting
-     * @param  radius  Radius of the point light
+     * @param vec  Initial position in world coordinates
+     * @param numRays  Number of rays for light to use when raycasting
+     * @param radius  Radius of the cone light
+     * @param direction  Direction of the cone light (where the center ray points) in degrees
+     * @param size  Size of the cone light in degrees
      *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @return  true if the light is instantiated properly, false otherwise.
      */
     bool addConeLight(Vec2 vec, int numRays, float radius, float direction, float size);
     
     /**
-     * Initializes a new cone light object at the given point
+     * Instantiates a new cone light object at the given point
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * After allocating the light, you must call calculateLightMesh on the current
+     * physics world before trying to draw.
      *
-     * @param  x  Initial x position in world coordinates
-     * @param  y  Initial y position in world coordinates
-     * @param  numRays  Number of rays for light to use when raycasting
-     * @param  radius  Radius of the point light
+     * @param x  Initial x position in world coordinates
+     * @param y  Initial y position in world coordinates
+     * @param numRays  Number of rays for light to use when raycasting
+     * @param radius  Radius of the cone light
+     * @param direction  Direction of the cone light (where the center ray points) in degrees
+     * @param size  Size of the cone light in degrees
      *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @return  true if the light is instantiated properly, false otherwise.
      */
     bool addConeLight(float x, float y, int numRays, float radius, float direction, float size) {
         return addConeLight(Vec2(x,y),numRays,radius,direction,size);
     };
     
     /**
-     * Initializes a new cone light object at the given point
+     * Instantiates a new directional light object at the physics world
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * After allocating the light, you must call calculateLightMesh on the current
+     * physics world before trying to draw.
      *
-     * @param  x  Initial x position in world coordinates
-     * @param  y  Initial y position in world coordinates
-     * @param  numRays  Number of rays for light to use when raycasting
-     * @param  radius  Radius of the point light
+     * @param numRays  Number of rays for light to use when raycasting
+     * @param direction  Direction of the rays in degreees
      *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @return  true if the light is instantiated properly, false otherwise.
      */
-    bool addDirectionalLight(Vec2 vec, int numRays, float direction);
+    bool addDirectionalLight(int numRays, float direction);
     
     
 #pragma mark -
 #pragma mark Update
     
     /**
-     * Initializes a new box object at the given point with no size.
+     * Updates each light with the current physics world
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * Each light must be passed a pointer to the world in order
+     * to properly raycast.
      *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @param delta  Timing values from parent loop
      */
     void update(float delta);
     
@@ -320,30 +290,16 @@ public:
 #pragma mark Drawing
     
     /**
-     * Initializes a new box object at the given point with no size.
+     * Renders all lights to the scene graph.
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * This function takes in the current active batch in order to end it while
+     * rendering lights. It uses the current camera matrix as a perspective
+     * for the shader. To draw, positional lights use a triangle fan and directional
+     * lights use a triangle strip.
      *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
-     */
-    void pushToBuffer();
-    
-    /**
-     * Initializes a new box object at the given point with no size.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
-     *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @param batch  The current active scene batch
+     * @param transform The global transformation matrix.
+     * @param tint      The tint to blend with the Node color.
      */
     void draw(const std::shared_ptr<SpriteBatch> &batch, const Mat4 &transform, Color4 tint) override;
     

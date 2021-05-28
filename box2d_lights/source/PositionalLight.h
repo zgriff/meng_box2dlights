@@ -130,8 +130,8 @@ public:
      * for raycasting. Implementations of this method should NOT retain ownership of the
      * Box2D world. That is a tight coupling that we should avoid.
      *
-     * @param  delta  Initial position in world coordinates
-     * @param  world  Number of rays in the light
+     * @param  delta  Timing values from parent loop
+     * @param  world  The current physics world
      *
      * @return a new point light object at the given point with no radius.
      */

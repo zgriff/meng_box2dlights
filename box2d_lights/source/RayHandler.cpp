@@ -40,6 +40,7 @@ void RayHandler::dispose() {
 
 
 bool RayHandler::init() {
+    
     SceneNode::initWithPosition(Vec2::ZERO);
     
     _vertSize = 0;
@@ -67,16 +68,16 @@ bool RayHandler::init() {
 //Adds a point light to list of lights
 //TODO: change so vert data add is in separate function to be updated each frame
 bool RayHandler::addPointLight(Vec2 vec, int numRays, float radius) {
+    
     auto light = PointLight::alloc(vec, numRays, radius);
-//    light->setWorld(_world);
+
     light->calculateLightMesh(_world);
-    
-    CULog("point light contains: %i", light->contains(vec.x+1, vec.y+1));
-    
+        
     auto verts = light->getVerts();
     auto indx = light->getIndices();
     
     for (int i = 0; i < verts.size(); i++) {
+        
         _vertData[_vertSize].pos = verts[i].pos*_scale;
         _vertData[_vertSize].color = verts[i].color;
         _vertData[_vertSize].frac = verts[i].frac;
@@ -84,6 +85,7 @@ bool RayHandler::addPointLight(Vec2 vec, int numRays, float radius) {
     }
     
     for (int j = 0; j < indx.size(); j++) {
+        
         _indxData[_indxSize] = indx[j];
         _indxSize++;
     }
@@ -97,15 +99,16 @@ bool RayHandler::addPointLight(Vec2 vec, int numRays, float radius) {
 // a point light to list of lights
 //TODO: change so vert data add is in separate function to be updated each frame
 bool RayHandler::addConeLight(Vec2 vec, int numRays, float radius, float direction, float size) {
-    auto light = ConeLight::alloc(vec, numRays, radius, direction, size);
-//    light->setWorld(_world);
-    light->calculateLightMesh(_world);
-    CULog("cone contains: %f, %f : %i", vec.x-1,vec.y-1,light->contains(vec.x-1, vec.y-1));
     
+    auto light = ConeLight::alloc(vec, numRays, radius, direction, size);
+    
+    light->calculateLightMesh(_world);
+
     auto verts = light->getVerts();
     auto indx = light->getIndices();
     
     for (int i = 0; i < verts.size(); i++) {
+        
         _vertData[_vertSize].pos = verts[i].pos*_scale;
         _vertData[_vertSize].color = verts[i].color;
         _vertData[_vertSize].frac = verts[i].frac;
@@ -113,6 +116,7 @@ bool RayHandler::addConeLight(Vec2 vec, int numRays, float radius, float directi
     }
     
     for (int j = 0; j < indx.size(); j++) {
+        
         _indxData[_indxSize] = indx[j];
         _indxSize++;
     }
@@ -122,20 +126,18 @@ bool RayHandler::addConeLight(Vec2 vec, int numRays, float radius, float directi
     return true;
 }
 
-// a directional light to list of lights
-//TODO: change so vert data add is in separate function to be updated each frame
-bool RayHandler::addDirectionalLight(Vec2 vec, int numRays, float direction) {
-    auto light = DirectionalLight::alloc(numRays, direction);
-//    light->setWorld(_world);
-    light->calculateLightMesh(_world);
+
+bool RayHandler::addDirectionalLight(int numRays, float direction) {
     
-    CULog("directional light contains: %f, %f : %i", 0.1f,0.0f,light->contains(0.1f, 0.0f));
-    CULog("directional light contains: %f, %f : %i", -5.0f, 5.0f,light->contains(5.0f, 5.0f));
+    auto light = DirectionalLight::alloc(numRays, direction);
+    
+    light->calculateLightMesh(_world);
     
     auto verts = light->getVerts();
     auto indx = light->getIndices();
     
     for (int i = 0; i < verts.size(); i++) {
+        
         _vertData[_vertSize].pos = verts[i].pos*_scale;
         _vertData[_vertSize].color = verts[i].color;
         _vertData[_vertSize].frac = verts[i].frac;
@@ -143,6 +145,7 @@ bool RayHandler::addDirectionalLight(Vec2 vec, int numRays, float direction) {
     }
     
     for (int j = 0; j < indx.size(); j++) {
+        
         _indxData[_indxSize] = indx[j];
         _indxSize++;
     }
@@ -156,11 +159,14 @@ bool RayHandler::addDirectionalLight(Vec2 vec, int numRays, float direction) {
 void RayHandler::update(float delta) {
     
     for (auto it = _lights.begin(); it != _lights.end(); it++) {
+        
         (*it)->update(delta,_world);
+        
         auto verts = (*it)->getVerts();
         auto indx = (*it)->getIndices();
         
         for (int i = 0; i < verts.size(); i++) {
+            
             _vertData[_vertSize].pos = verts[i].pos*_scale;
             _vertData[_vertSize].color = verts[i].color;
             _vertData[_vertSize].frac = verts[i].frac;
@@ -168,6 +174,7 @@ void RayHandler::update(float delta) {
         }
         
         for (int j = 0; j < indx.size(); j++) {
+            
             _indxData[_indxSize] = indx[j];
             _indxSize++;
         }
@@ -176,23 +183,17 @@ void RayHandler::update(float delta) {
 }
 
 
-//Needed to draw vbo
-void RayHandler::pushToBuffer() {
-    _vbo->loadVertexData(_vertData, _vertSize, GL_STREAM_DRAW);
-    _vbo->loadIndexData(_indxData, _indxSize, GL_STREAM_DRAW);
-    
-    _indxSize = 0;
-    _vertSize = 0;
-}
-
-
-
 void RayHandler::draw(const std::shared_ptr<SpriteBatch> &batch, const Mat4 &transform, Color4 tint) {
     
     batch->end();
     
     _vbo->bind();
-    pushToBuffer();
+    
+    _vbo->loadVertexData(_vertData, _vertSize, GL_STREAM_DRAW);
+    _vbo->loadIndexData(_indxData, _indxSize, GL_STREAM_DRAW);
+    
+    _indxSize = 0;
+    _vertSize = 0;
     
     //TODO: Fix, multiply by transform possibly
     _shader->setUniformMat4("uPerspective", getScene()->getCamera()->getCombined());
@@ -201,6 +202,7 @@ void RayHandler::draw(const std::shared_ptr<SpriteBatch> &batch, const Mat4 &tra
     GLuint size = 0;
     
     for (int i = 0; i < _lights.size(); i++) {
+        
         size = (GLuint)_lights[i]->getIndices().size();
         
         if (_lights[i]->isPositional()) {
@@ -208,7 +210,6 @@ void RayHandler::draw(const std::shared_ptr<SpriteBatch> &batch, const Mat4 &tra
         } else {
             _vbo->draw(GL_TRIANGLE_STRIP, size, index);
         }
-        
         
         index += size;
     }
