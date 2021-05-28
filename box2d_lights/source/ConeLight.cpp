@@ -72,8 +72,8 @@ bool ConeLight::calculateEndpoints() {
         sinarr[i] = sin(angle);
         cosarr[i] = cos(angle);
         
-        _endX.push_back(_radius * cosarr[i]);
-        _endY.push_back(_radius * sinarr[i]);
+        _endX.push_back(_radius * cosarr[i] + getPosition().x);
+        _endY.push_back(_radius * sinarr[i] + getPosition().x);
     }
     
     return true;

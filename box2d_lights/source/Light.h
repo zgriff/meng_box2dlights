@@ -1,10 +1,48 @@
 //
 //  Light.h
-//  Box2DLights
+//  Cornell University Game Library (CUGL)
 //
-//  Created by Zach Griffin on 5/3/21.
-//  Copyright © 2021 Game Design Initiative at Cornell. All rights reserved.
+//  This class implements a light physics object. A light is essentially a list
+//  of Light vertices and indices (a light mesh) calculated through raycasting.
+//  They use snapshots of the current physics world and the raycast callback
+//  function from b2dworld to perform these calculations. The Light vertices
+//  contain information about vertex position, color, and how far a ray was from
+//  it's designated endpoint before hitting a fixture.
 //
+//  This class uses our standard shared-pointer architecture.
+//
+//  1. The constructor does not perform any initialization; it just sets all
+//     attributes to their defaults.
+//
+//  2. All initialization takes place via init methods, which can fail if an
+//     object is initialized more than once.
+//
+//  3. All allocation takes place via static constructors which return a shared
+//     pointer.
+//
+//  CUGL MIT License:
+//      This software is provided 'as-is', without any express or implied
+//      warranty.  In no event will the authors be held liable for any damages
+//      arising from the use of this software.
+//
+//      Permission is granted to anyone to use this software for any purpose,
+//      including commercial applications, and to alter it and redistribute it
+//      freely, subject to the following restrictions:
+//
+//      1. The origin of this software must not be misrepresented; you must not
+//      claim that you wrote the original software. If you use this software
+//      in a product, an acknowledgment in the product documentation would be
+//      appreciated but is not required.
+//
+//      2. Altered source versions must be plainly marked as such, and must not
+//      be misrepresented as being the original software.
+//
+//      3. This notice may not be removed or altered from any source distribution.
+//
+//  This file is based on CUObstacle and CUSimpleObstacle by Walker White, 2021
+//
+//  Author: Zach Griffin
+//  Version: 5/28/21
 
 #ifndef Light_h
 #define Light_h
@@ -24,11 +62,14 @@
 
 namespace cugl {
 
+    /**
+     * The classes that hold all light physics of the game
+     */
     namespace b2dlights {
 
-    
-    
-
+/**
+ * Simple class representing information needed to draw the light.
+ */
 class LightVert {
 public:
     Vec2 pos;
@@ -36,6 +77,21 @@ public:
     float frac;
 };
 
+/**
+ * Base model class representing light sources.
+ *
+ * Instances represent light objects. There should be NO game
+ * controlling logic code in the light object. That should reside in the
+ * Controllers.
+ *
+ * This abstract class has no information on how the mesh is to be generated
+ * and should never be instantiated directly. Instead, you should instantiate
+ * either DirectionalLight or PositionalLight.
+ * This class only exists to unify common functionality.
+ *
+ * Many of the method comments in this class are taken from CUObstacle and, by extension,
+ * the Box2d manual by Erin Catto (2011).
+ */
 class Light {
 protected:
     /** The default color for lights */
@@ -95,7 +151,7 @@ protected:
     /** A vector populated with indices used to for triangulation while drawing the mesh*/
     std::vector<Uint32> _lightIndx;
     
-    /** Whether this light needs to recalculate it's endpoints (_endX, _endY) */
+    /** Whether this light needs to recalculate it's start or endpoints */
     bool _dirty;
     
 
@@ -148,14 +204,14 @@ public:
     void dispose();
     
     /**
-     * Initializes a new light object at the origin.
+     * Initializes a new white light object at the origin with 100 rays.
      *
      * @return true if the Light is initialized properly, false otherwise.
      */
     virtual bool init() { return init(Vec2::ZERO, 100); }
     
     /**
-     * Initializes a new light object at the given point
+     * Initializes a new white light object at the given point with 100 rays.
      *
      * @param  pos  Initial position in world coordinates
      *
@@ -166,7 +222,7 @@ public:
     }
     
     /**
-     * Initializes a new light object at the given point
+     * Initializes a new white light object with the given parameters.
      *
      * @param  pos  Initial position in world coordinates
      * @param  numRays  Number of rays used to calculate light mesh (100 by default)
@@ -179,7 +235,7 @@ public:
     
     
     /**
-     * Initializes a new light object at the given location.
+     * Initializes a new light object with the given parameters.
      *
      * The scene graph is completely decoupled from the physics system.
      * The node does not have to be the same size as the physics body. We
@@ -235,34 +291,64 @@ public:
      */
     int getNumRays() {return _numRays;}
     
-    
-//    Vec2 getPosition() {return _pos;}
-    
-    
+        
+    /**
+     * Returns a vector of vertices representing the light mesh.
+     *
+     * LightVert contains the position of a vertex, the color of the light,
+     * and a fraction representing normalized distance from light source.
+     *
+     * @return  Vector representing the light mesh
+     */
     std::vector<LightVert> getVerts() {return _lightVerts;}
     
+    /**
+     * Returns a vector of indices to be used when triangulating the mesh
+     *
+     * @return  Vector representing mesh indices
+     */
     std::vector<Uint32> getIndices() {return _lightIndx;}
     
+    /**
+     * Returns whether the light is positional or not for drawing purposes
+     *
+     * Positional lights use GL_TRIANGLE_FAN
+     * Directional lights use GL_TRIANGLE_STRIP
+     *
+     * @return  true if positional, false if directional
+     */
+    virtual bool isPositional() {return false;}
+    
 #pragma mark -
-#pragma mark Light Rendering
+#pragma mark Light Mesh Generation
     
     /**
-     * Draws this Node and all of its children with the given SpriteBatch.
+     * Generates the light mesh based on the type of light and world snapshot.
      *
-     * You almost never need to override this method.  You should override the
-     * method draw(shared_ptr<SpriteBatch>,const Mat4&,Color4) if you need to
-     * define custom drawing code.
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
      *
-     * @param batch     The SpriteBatch to draw with.
-     * @param transform The global transformation matrix.
-     * @param tint      The tint to blend with the Node color.
+     * @param  world  The current ObstacleWorld of the game.
+     *
+     * @return  true if the vector of LightVerts  was successfully populated, false otherwise.
      */
-//    virtual void render(const std::shared_ptr<SpriteBatch>& batch, const Mat4& transform, Color4 tint);
-    
     virtual bool calculateLightMesh(std::shared_ptr<cugl::physics2::ObstacleWorld> world) {
         return false;
     }
     
+    /**
+     * Reports if a ray encountered any fixtures in its path -- Raycast callback
+     *
+     * This function is used as the callback when raycasting in the world. When raycasting,
+     * one only to specify the start and end a ray. In its current implementation, this function
+     * does not account for being attached to a physics body.
+     *
+     * The callback returns the fixture if the ray encounters one, the point that the ray gets
+     * to before encountering a fixture, the normal vector of the fixture surface (if applicable),
+     * and the fraction of raycasted ray magnitude / initial ray magnitude.
+     */
     std::function<float(b2Fixture*, const Vec2, const Vec2, float)> ray = [&](b2Fixture* fix, const Vec2 point, const Vec2 normal, float fraction) {
         
         mx[m_index] = point.x;
@@ -273,12 +359,27 @@ public:
     
     
 #pragma mark -
-#pragma mark Light Querying
+#pragma mark Light Mesh Querying
     
+    /**
+     * Queries this light's mesh for the given point
+     *
+     * @param  x  The x-coordinate of the point to query
+     * @param  y  The y-coordinate of the point to query
+     *
+     * @return  true if the point lies within the light's mesh
+     */
     virtual bool contains(float x, float y) {
         return false;
     }
     
+    /**
+     * Queries this light's mesh for the given point.
+     *
+     * @param  vec  The Vec2 coordinate to query
+     *
+     * @return  true if the point lies within the light's mesh
+     */
     virtual bool contains(Vec2 vec) {
         return contains(vec.x, vec.y);
     }
@@ -848,33 +949,17 @@ public:
 #pragma mark -
 #pragma mark Update Methods
     /**
-     * Updates the object's physics state (NOT GAME LOGIC).
+     * Recalculates the light mesh from state and world changes
      *
-     * This method is called AFTER the collision resolution state. Therefore, it
-     * should not be used to process actions or any other gameplay information.
-     * Its primary purpose is to adjust changes to the fixture, which have to
-     * take place after collision.
+     * This function needs to be called after altering information in this light object,
+     * e.g. color, numRays, etc. It requires a shared pointer to the ObstacleWorld
+     * for raycasting. Implementations of this method should NOT retain ownership
+     * of the world. That is a tight coupling that we should avoid.
      *
-     * In other words, this is the method that updates the scene graph.  If you
-     * forget to call it, it will not draw your changes.
+     * @param  delta  Initial position in world coordinates
+     * @param  world  Number of rays in the light
      *
-     * @param delta Timing values from parent loop
-     */
-    virtual void update(float delta) {
-        if (_scene) { updateDebug(); }
-    }
-        
-    /**
-     * Initializes a new box object at the given point with no size.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
-     *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @return a new point light object at the given point with no radius.
      */
     virtual void update(float delta, std::shared_ptr<cugl::physics2::ObstacleWorld> world) {
         if (_scene) { updateDebug(); }
@@ -884,22 +969,22 @@ public:
 #pragma mark -
 #pragma mark Debugging Methods
     /**
-     * Returns the physics object tag.
+     * Returns the light object tag.
      *
      * A tag is a string attached to an object, in order to identify it in
      * debugging.
      *
-     * @return the physics object tag.
+     * @return the light object tag.
      */
     std::string getName() const { return _tag; }
     
     /**
-     * Sets the physics object tag.
+     * Sets the light object tag.
      *
      * A tag is a string attached to an object, in order to identify it in
      * debugging.
      *
-     * @param  value    the physics object tag
+     * @param  value    the light object tag
      */
     void setName(std::string value) { _tag = value; }
 

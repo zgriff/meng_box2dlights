@@ -13,9 +13,9 @@ using namespace cugl::b2dlights;
 #pragma mark -
 #pragma mark Constructors
 
-bool DirectionalLight::init(const Vec2 pos, const int numRays, const float direction, std::shared_ptr<cugl::physics2::ObstacleWorld> world) {
+bool DirectionalLight::init(const int numRays, const float direction, std::shared_ptr<cugl::physics2::ObstacleWorld> world) {
     
-    Light::init(pos, numRays);
+    Light::init(Vec2::ZERO, numRays);
     
     _direction = direction;
     
