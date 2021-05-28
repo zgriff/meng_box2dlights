@@ -32,6 +32,7 @@ RayHandler::~RayHandler(void) {
 
 
 void RayHandler::dispose() {
+    _lights.clear();
     _world = nullptr;
     _vbo = nullptr;
     _shader = nullptr;

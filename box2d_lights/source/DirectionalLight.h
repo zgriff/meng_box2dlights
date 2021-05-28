@@ -49,7 +49,9 @@
 #include "Light.h"
 
 namespace cugl {
-
+    /**
+     * The classes that hold all light physics of the game
+     */
     namespace b2dlights {
 
 /**

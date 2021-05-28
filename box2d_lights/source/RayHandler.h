@@ -2,7 +2,9 @@
 //  RayHandler.h
 //  Cornell University Game Library (CUGL)
 //
-//  This class implements a capsule physics object. 
+//  This class implements a ray handler node, which essentially serves as
+//  a scene node for all of the lights. It utilizes a vertex buffer and a fairly
+//  simple shader to draw all added lights to the scene. 
 //
 //  This class uses our standard shared-pointer architecture.
 //
@@ -34,10 +36,11 @@
 //
 //      3. This notice may not be removed or altered from any source distribution.
 //
-//  This file is based on the CS 3152 PhysicsDemo Lab by Don Holden, 2007
+//  This file is based on CUSceneNode
+//  by Walker White, 2021
 //
-//  Author: Walker White
-//  Version: 1/22/21
+//  Author: Zach Griffin
+//  Version: 5/28/21
 
 #ifndef RayHandler_h
 #define RayHandler_h
@@ -63,36 +66,42 @@
 
 
 namespace cugl {
-
+    /**
+     * The classes that hold all light physics of the game
+     */
     namespace b2dlights {
-
+    
+/**
+ * This is a scene graph node used to instantiate and draw various
+ * light sources to a scene.
+ */
 class RayHandler : public scene2::SceneNode {
 protected:
     
-    /** The direction the cone light is facing in degrees */
+    /** The shader used to render the lights */
     std::shared_ptr<cugl::Shader> _shader;
-    /** The direction the cone light is facing in degrees */
+    /** The vertex buffer used to pass light vertex data to the shader */
     std::shared_ptr<cugl::VertexBuffer> _vbo;
     
-    /** The direction the cone light is facing in degrees */
+    /** Initialization size for vertex array */
     GLuint _maxVertices;
-    /** The direction the cone light is facing in degrees */
+    /** Initialization size for index array */
     GLuint _maxIndices;
-    /** The direction the cone light is facing in degrees */
+    /** The number of vertices, used for iteration */
     GLuint _vertSize;
-    /** The direction the cone light is facing in degrees */
+    /** The number of indices, used for iteration */
     GLuint _indxSize;
-    /** The direction the cone light is facing in degrees */
+    /** An array containing the vertex data for all lights */
     LightVert* _vertData;
-    /** The direction the cone light is facing in degrees */
+    /** An array containing the vertex index data for all lights */
     GLuint* _indxData;
     
-    /** The direction the cone light is facing in degrees */
+    /** The drawscale of the scene */
     float _scale;
     
-    /** The direction the cone light is facing in degrees */
+    /** A vector containing all of the lights in the scene */
     std::vector<std::shared_ptr<Light>> _lights;
-    /** The direction the cone light is facing in degrees */
+    /** The current physics world */
     std::shared_ptr<cugl::physics2::ObstacleWorld> _world;
     
 public:
@@ -102,12 +111,11 @@ public:
     virtual bool init() override;
     
     /**
-     * Creates a new game level with no source file.
+     * Returns a newly allocated rayhandler at the world origin.
      *
-     * The source file can be set at any time via the setFile() method. This method
-     * does NOT load the asset.  You must call the load() method to do that.
+     * The node has both position and size (0,0). 
      *
-     * @return  an autoreleased level file
+     * @return a newly allocated rayhandler
      */
     static std::shared_ptr<RayHandler> alloc() {
         std::shared_ptr<RayHandler> result = std::make_shared<RayHandler>();
@@ -115,40 +123,28 @@ public:
     }
     
     /**
-     * Initializes a new box object at the given point with no size.
+     * Creates an uninitialized rayhandler.
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * You must initialize this rayhandler before use.
      *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * NEVER USE A CONSTRUCTOR WITH NEW. If you want to allocate a Node on the
+     * heap, use one of the static constructors instead.
      */
     RayHandler(void) : scene2::SceneNode() {};
     
     /**
-     * Initializes a new box object at the given point with no size.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
-     *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * Deletes this node, disposing all resources
      */
     virtual ~RayHandler(void);
     
     /**
-     * Initializes a new box object at the given point with no size.
+     * Disposes all of the resources used by this node.
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * A disposed Node can be safely reinitialized. Any children owned by this
+     * node will be released.  They will be deleted if no other object owns them.
+     *
+     * It is unsafe to call this on a Node that is still currently inside of
+     * a scene graph.
      */
     void dispose() override;
     
