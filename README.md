@@ -1,1 +1,3 @@
 # meng_project
+
+See GameScene.cpp and World.cpp for examples of instantiating and updating the RayHandler. The project should function by just adding the b2d_lights_source folder contents into a source folder (not ideal but functional for now). Currently, the RayHandler has an issue with rendering multiple lights and is only able to do one at a time, and I am still working on a fix for that. Additionally, the body and debug aspects of Light are currently unimplemented (body meaning attaching to another body), but I have left them in as I'm working on the latter to help fix the RayHandler issue. 
