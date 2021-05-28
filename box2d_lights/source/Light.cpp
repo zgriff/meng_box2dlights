@@ -33,16 +33,6 @@ _debug(nullptr)
  */
 Light::~Light() {
     setDebugScene(nullptr);
-    dispose();
-}
-
-
-void Light::dispose() {
-    mx.clear();
-    my.clear();
-    f.clear();
-    _endX.clear();
-    _endY.clear();
     _lightVerts.clear();
     _lightIndx.clear();
 }
@@ -57,45 +47,26 @@ void Light::dispose() {
  * @return  true if the Light is initialized properly, false otherwise.
  */
 bool Light::init(const Vec2 pos, const int numRays, const Color4 color) {
-    // Object has yet to be deactivated
-//    _remove = false;
     
     // Allocate the body information
-    _bodyinfo.awake  = true;
-    _bodyinfo.allowSleep = true;
-    _bodyinfo.gravityScale = 1.0f;
     _bodyinfo.position.Set(pos.x,pos.y);
     // Objects are physics objects unless otherwise noted
     _bodyinfo.type = b2_dynamicBody;
     
-    _pos = pos;
     _numRays = numRays;
     _color = color;
     
+    mx = new float[_numRays];
+    my = new float[_numRays];
+    f = new float[_numRays];
+    
+    _endX = new float[_numRays];
+    _endY = new float[_numRays];
+    
+    _dirty = true;
+    
     return true;
 }
-
-/**
- * Copies the state from the given body to the body def.
- *
- * This is important if you want to save the state of the body before removing
- * it from the world.
- */
-void Light::setBodyState(const b2Body& body) {
-    _bodyinfo.type   = body.GetType();
-    _bodyinfo.angle  = body.GetAngle();
-    _bodyinfo.active = body.IsActive();
-    _bodyinfo.awake  = body.IsAwake();
-    _bodyinfo.bullet = body.IsBullet();
-    _bodyinfo.position.Set(body.GetPosition().x,body.GetPosition().y);
-    _bodyinfo.linearVelocity.Set(body.GetLinearVelocity().x,body.GetLinearVelocity().y);
-    _bodyinfo.allowSleep = body.IsSleepingAllowed();
-    _bodyinfo.fixedRotation = body.IsFixedRotation();
-    _bodyinfo.gravityScale  = body.GetGravityScale();
-    _bodyinfo.angularDamping = body.GetAngularDamping();
-    _bodyinfo.linearDamping  = body.GetLinearDamping();
-}
-
 
 
 #pragma mark -
@@ -153,22 +124,14 @@ void Light::setDebugScene(const std::shared_ptr<scene2::SceneNode>& node) {
 void Light::updateDebug() {
     CUAssertLog(_scene, "Attempt to reposition a wireframe with no parent");
     Vec2 pos = getPosition();
-    float angle = getAngle();
     
     // Positional snap
     if (_posSnap >= 0) {
         pos.x = floor((pos.x*_posFact+0.5f)/_posFact);
         pos.y = floor((pos.y*_posFact+0.5f)/_posFact);
     }
-    // Rotational snap
-    if (_angSnap >= 0) {
-        angle = (float)(180*angle/M_PI);
-        angle = floor((angle*_angFact+0.5f)/_angFact); // Formula is for degrees
-        angle = (float)(M_PI*angle/180);
-    }
     
     _debug->setPosition(pos);
-    _debug->setAngle(angle);
 }
 
 

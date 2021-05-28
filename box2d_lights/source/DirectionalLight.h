@@ -55,9 +55,9 @@ namespace cugl {
 /**
  * Directional light model used for covering ObstacleWorld in a
  * light mesh.
-
  */
 class DirectionalLight : public Light {
+    
 protected:
 
     /** The angle the rays point in degrees with 0 at x-axis */
@@ -70,8 +70,29 @@ protected:
     
     
 public:
+    
 #pragma mark -
 #pragma mark Getters and Setters
+    
+    /**
+     * Returns the direction of this light's rays in degrees.
+     *
+     * @return a new point light object at the given point with no radius.
+     */
+    float getDirection() {return _direction;}
+    
+    /**
+     * Sets the direction of the light rays to the specified degree.
+     *
+     * The update method must be called after this method in order
+     * for any changes to take effect.
+     *
+     * @param  dir  Direction of light rays (in degrees)
+     */
+    void setDirection(float dir) {
+        _direction = dir;
+        _dirty = true;
+    }
 
     /**
      * Returns whether the light is positional or not for drawing purposes
@@ -85,25 +106,19 @@ public:
     
     
 #pragma mark -
-#pragma mark Construct Destruct
+#pragma mark Constructors
     
     /**
-     * Initializes a new wheel object of the given dimensions.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * Initializes a new directional light object with the provided parameters.
      *
      * @param  pos  Initial position in world coordinates
      * @param  numRays  Number of rays in the light
      * @param  radius  Radius of the point light circle
      *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @return true if the obstacle is initialized properly, false otherwise.
      */
-    virtual bool init(const int numRays, const float direction, std::shared_ptr<cugl::physics2::ObstacleWorld> world);
+    virtual bool init(const int numRays, const float direction);
     
-
     /**
      * Returns a new directional light object with the provided parameters.
      *
@@ -116,12 +131,16 @@ public:
      * @param  numRays  Number of rays in the light
      * @param  radius  Radius of the point light circle
      *
-     * @return a new point light object at the given point with no radius.
+     * @return a new directional light object
      */
-    static std::shared_ptr<DirectionalLight> alloc(int numRays, float direction, std::shared_ptr<cugl::physics2::ObstacleWorld> world) {
+    static std::shared_ptr<DirectionalLight> alloc(int numRays, float direction) {
         std::shared_ptr<DirectionalLight> result = std::make_shared<DirectionalLight>();
-        return (result->init(numRays, direction, world) ? result : nullptr);
+        return (result->init(numRays, direction) ? result : nullptr);
     }
+    
+    
+#pragma mark -
+#pragma mark Update
     
     /**
      * Recalculates the light mesh from state and world changes
@@ -133,11 +152,12 @@ public:
      *
      * @param  delta  Initial position in world coordinates
      * @param  world  Number of rays in the light
-     *
-     * @return a new point light object at the given point with no radius.
      */
     virtual void update(float delta, std::shared_ptr<cugl::physics2::ObstacleWorld> world) override;
     
+    
+#pragma mark -
+#pragma mark Light Mesh Generation
     
     /**
      * Generates the light mesh based on the type of light and world snapshot.
@@ -154,25 +174,14 @@ public:
     virtual bool calculateLightMesh(std::shared_ptr<cugl::physics2::ObstacleWorld> world) override;
     
     /**
-     * Initializes a new box object at the given point with no size.
+     * Recalculates the ray endpoints from state changes
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * Any time informatiom such as numRays or direction is changed,
+     * the endpoints must be updated.
      *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @return true if successfully able to update ray endpoints
      */
-    bool calculateEndpoints(std::shared_ptr<cugl::physics2::ObstacleWorld> world);
-    
-    /**
-     * Destroys this level, releasing all resources.
-//     */
-//    virtual ~PositionalLight(void);
-//
-//    void dispose();
+    virtual bool calculateEndpoints(std::shared_ptr<cugl::physics2::ObstacleWorld> world);
     
 #pragma mark -
 #pragma mark Light Querying
@@ -186,8 +195,6 @@ public:
      * @return  true if the point lies within the light's mesh
      */
     virtual bool contains(float x, float y) override;
-
-    
     
 };
 

@@ -69,58 +69,30 @@ namespace cugl {
 class RayHandler : public scene2::SceneNode {
 protected:
     
+    /** The direction the cone light is facing in degrees */
     std::shared_ptr<cugl::Shader> _shader;
+    /** The direction the cone light is facing in degrees */
     std::shared_ptr<cugl::VertexBuffer> _vbo;
     
+    /** The direction the cone light is facing in degrees */
     GLuint _maxVertices;
+    /** The direction the cone light is facing in degrees */
     GLuint _maxIndices;
+    /** The direction the cone light is facing in degrees */
     GLuint _vertSize;
+    /** The direction the cone light is facing in degrees */
     GLuint _indxSize;
+    /** The direction the cone light is facing in degrees */
     LightVert* _vertData;
+    /** The direction the cone light is facing in degrees */
     GLuint* _indxData;
     
-    /** The bounds of this level in physics coordinates */
-    Rect _bounds;
-    
-    //TODO: draw scale??
+    /** The direction the cone light is facing in degrees */
     float _scale;
     
-    const bool gammaCorrection = false;
-    const float gammaCorrectionParameter = 1.0f;
-    
-    bool _isDiffuse = false;
-    
-    cugl::Mat4 _combined;
-    
-    Color4 _ambientLight;
-    
-    
-    //TODO: modify these
-    std::vector<Vec2> _lightLocs;
-    
+    /** The direction the cone light is facing in degrees */
     std::vector<std::shared_ptr<Light>> _lights;
-    
-    std::vector<bool> _disabledLights;
-    
-    
-    bool _culling = true;
-    bool _shadows = true;
-    bool _blur = true;
-    
-    int _blurNum = 1;
-    
-    bool _customViewport = false;
-    int _viewportX = 0;
-    int _viewportY = 0;
-    //TODO: set to screen
-    int _viewportWidth;
-    int _viewportHeight;
-    
-    int _lightRenderedLastFrame = 0;
-    
-    //camera matrix corners
-    float x1, x2, y1, y2;
-    
+    /** The direction the cone light is facing in degrees */
     std::shared_ptr<cugl::physics2::ObstacleWorld> _world;
     
 public:
@@ -141,8 +113,6 @@ public:
         std::shared_ptr<RayHandler> result = std::make_shared<RayHandler>();
         return (result->init() ? result : nullptr);
     }
-    
-    
     
     /**
      * Initializes a new box object at the given point with no size.
@@ -201,48 +171,6 @@ public:
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    void setCombinedMatrix(OrthographicCamera cam);
-    
-    /**
-     * Initializes a new box object at the given point with no size.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
-     *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
-     */
-    void setCombinedMatrix(cugl::Mat4 combined);
-    
-    /**
-     * Initializes a new box object at the given point with no size.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
-     *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
-     */
-    bool intersect(float x, float y, float radius);
-    
-    /**
-     * Initializes a new box object at the given point with no size.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
-     *
-     * @param  pos  Initial position in world coordinates
-     *
-     * @return  true if the obstacle is initialized properly, false otherwise.
-     */
     std::shared_ptr<Light> getLight(int lid){
         return _lights[lid];
     }
@@ -259,7 +187,9 @@ public:
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
-    void setWorld(std::shared_ptr<cugl::physics2::ObstacleWorld> world) {_world = world;}
+    void setWorld(std::shared_ptr<cugl::physics2::ObstacleWorld> world) {
+        _world = world;
+    }
     
     /**
      * Initializes a new box object at the given point with no size.
@@ -275,25 +205,39 @@ public:
      */
     void setScale(float scale) {_scale = scale;}
     
-    /**
-     * Adds a new point light at the specified location.
-     *
-     * The source file can be set at any time via the setFile() method. This method
-     * does NOT load the asset.  You must call the load() method to do that.
-     *
-     * @return  an autoreleased level file
-     */
-    bool addPointLight(Vec2 vec, int numRays, float radius);
+    
+#pragma mark -
+#pragma mark Light Creators
     
     /**
-     * Initializes a new box object at the given point with no size.
+     * Initializes a new point light object at the given point
      *
      * The scene graph is completely decoupled from the physics system.
      * The node does not have to be the same size as the physics body. We
      * only guarantee that the scene graph node is positioned correctly
      * according to the drawing scale.
      *
-     * @param  pos  Initial position in world coordinates
+     * @param  x  Initial x position in world coordinates
+     * @param  y  Initial y position in world coordinates
+     * @param  numRays  Number of rays for light to use when raycasting
+     * @param  radius  Radius of the point light
+     *
+     * @return  true if the obstacle is initialized properly, false otherwise.
+     */
+    bool addPointLight(Vec2 vec, int numRays, float radius);
+    
+    /**
+     * Initializes a new point light object at the given point
+     *
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
+     *
+     * @param  x  Initial x position in world coordinates
+     * @param  y  Initial y position in world coordinates
+     * @param  numRays  Number of rays for light to use when raycasting
+     * @param  radius  Radius of the point light
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
@@ -302,32 +246,61 @@ public:
     };
     
     /**
-     * Initializes a new box object at the given point with no size.
+     * Initializes a new cone light object at the given point
      *
      * The scene graph is completely decoupled from the physics system.
      * The node does not have to be the same size as the physics body. We
      * only guarantee that the scene graph node is positioned correctly
      * according to the drawing scale.
      *
-     * @param  pos  Initial position in world coordinates
+     * @param  x  Initial x position in world coordinates
+     * @param  y  Initial y position in world coordinates
+     * @param  numRays  Number of rays for light to use when raycasting
+     * @param  radius  Radius of the point light
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
     bool addConeLight(Vec2 vec, int numRays, float radius, float direction, float size);
     
     /**
-     * Initializes a new box object at the given point with no size.
+     * Initializes a new cone light object at the given point
      *
      * The scene graph is completely decoupled from the physics system.
      * The node does not have to be the same size as the physics body. We
      * only guarantee that the scene graph node is positioned correctly
      * according to the drawing scale.
      *
-     * @param  pos  Initial position in world coordinates
+     * @param  x  Initial x position in world coordinates
+     * @param  y  Initial y position in world coordinates
+     * @param  numRays  Number of rays for light to use when raycasting
+     * @param  radius  Radius of the point light
+     *
+     * @return  true if the obstacle is initialized properly, false otherwise.
+     */
+    bool addConeLight(float x, float y, int numRays, float radius, float direction, float size) {
+        return addConeLight(Vec2(x,y),numRays,radius,direction,size);
+    };
+    
+    /**
+     * Initializes a new cone light object at the given point
+     *
+     * The scene graph is completely decoupled from the physics system.
+     * The node does not have to be the same size as the physics body. We
+     * only guarantee that the scene graph node is positioned correctly
+     * according to the drawing scale.
+     *
+     * @param  x  Initial x position in world coordinates
+     * @param  y  Initial y position in world coordinates
+     * @param  numRays  Number of rays for light to use when raycasting
+     * @param  radius  Radius of the point light
      *
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
     bool addDirectionalLight(Vec2 vec, int numRays, float direction);
+    
+    
+#pragma mark -
+#pragma mark Update
     
     /**
      * Initializes a new box object at the given point with no size.
@@ -342,6 +315,9 @@ public:
      * @return  true if the obstacle is initialized properly, false otherwise.
      */
     void update(float delta);
+    
+#pragma mark -
+#pragma mark Drawing
     
     /**
      * Initializes a new box object at the given point with no size.

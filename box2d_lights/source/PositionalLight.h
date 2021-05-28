@@ -56,19 +56,33 @@ namespace cugl {
  * Positional light model used for a single point light source
  */
 class PositionalLight : public Light {
+    
 protected:
 
     /** The radius of this light (cone or point) */
     float _radius;
-        
+    
     
 public:
+    
 #pragma mark -
 #pragma mark Getters and Setters
     
-    
+    /**
+     * Returns the radius of this light, i.e. the magnitude of its rays
+     *
+     * @return a new point light object at the given point with no radius.
+     */
     float getRadius() {return _radius;}
     
+    /**
+     * Sets the radius of this light.
+     *
+     * The update method must be called after this method in order
+     * for any changes to take effect.
+     *
+     * @param  radius  Radius of the light, i.e. magnitude of its rays
+     */
     void setRadius(float radius) {
         _radius = radius;
         _dirty = true;
@@ -86,51 +100,64 @@ public:
     
     
 #pragma mark -
-#pragma mark Construct Destruct
+#pragma mark Constructors
     
     /**
-//     * Initializes a new wheel object of the given dimensions.
-//     *
-//     * The scene graph is completely decoupled from the physics system.
-//     * The node does not have to be the same size as the physics body. We
-//     * only guarantee that the scene graph node is positioned correctly
-//     * according to the drawing scale.
-//     *
-//     * @param  pos  Initial position in world coordinates
-//     * @param  numRays  Number of rays in the light
-//     * @param  radius  Radius of the point light circle
-//     *
-//     * @return  true if the obstacle is initialized properly, false otherwise.
-//     */
-    virtual bool init(const Vec2 pos, const int numRays, float radius);
-
-    
-    /**
-     * Destroys this level, releasing all resources.
-//     */
-//    virtual ~PositionalLight(void);
-//    
-//    void dispose();
-    
-    
-//    virtual void update(float delta) override;
-    
-#pragma mark -
-#pragma mark Mesh Generation
-    
-    /**
-     * Generates the light mesh based on the type of light and world snapshot.
+     * Initializes a new positional light object with the given parameters.
      *
      * The scene graph is completely decoupled from the physics system.
      * The node does not have to be the same size as the physics body. We
      * only guarantee that the scene graph node is positioned correctly
      * according to the drawing scale.
      *
+     * @param  pos  Initial position in world coordinates
+     * @param  numRays  Number of rays in the light
+     * @param  radius  Radius of the point light circle
+     *
+     * @return  true if the light is initialized properly, false otherwise.
+     */
+    virtual bool init(const Vec2 pos, const int numRays, float radius);
+    
+    
+#pragma mark -
+#pragma mark Update
+    
+    /**
+     * Recalculates the light mesh from state and world changes
+     *
+     * This function needs to be called after altering information in this light object,
+     * e.g. color, numRays, etc. It requires a shared pointer to the ObstacleWorld
+     * for raycasting. Implementations of this method should NOT retain ownership of the
+     * Box2D world. That is a tight coupling that we should avoid.
+     *
+     * @param  delta  Initial position in world coordinates
+     * @param  world  Number of rays in the light
+     *
+     * @return a new point light object at the given point with no radius.
+     */
+    virtual void update(float delta, std::shared_ptr<cugl::physics2::ObstacleWorld> world) override;
+    
+    
+#pragma mark -
+#pragma mark Light Mesh Generation
+    
+    /**
+     * Generates the light mesh based on the type of light and world snapshot.
+     *
+     * This method uses the position of the light and the calculated ray
+     * endpoints raycast in the provided world. If a ray hits a fixture, we record
+     * the new ray endpoint and the fraction of the magnitude of the original ray
+     * over the magnitude of the new ray. Implementations of this method should
+     * not retain ownership of the world as that is tight coupling.
+     *
      * @param  world  The current ObstacleWorld of the game.
      *
      * @return  true if the vector of LightVerts  was successfully populated, false otherwise.
      */
     virtual bool calculateLightMesh(std::shared_ptr<cugl::physics2::ObstacleWorld> world) override;
+    
+#pragma mark -
+#pragma mark Light Mesh Querying
     
     /**
      * Queries this light's mesh for the given point

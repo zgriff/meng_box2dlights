@@ -13,7 +13,7 @@ using namespace cugl::b2dlights;
 #pragma mark -
 #pragma mark Constructors
 
-bool DirectionalLight::init(const int numRays, const float direction, std::shared_ptr<cugl::physics2::ObstacleWorld> world) {
+bool DirectionalLight::init(const int numRays, const float direction) {
     
     Light::init(Vec2::ZERO, numRays);
     
@@ -21,8 +21,6 @@ bool DirectionalLight::init(const int numRays, const float direction, std::share
     
     _startX = new float[numRays];
     _startY = new float[numRays];
-    
-    calculateEndpoints(world);
     
     return true;
 }
@@ -44,18 +42,22 @@ void DirectionalLight::update(float delta, std::shared_ptr<cugl::physics2::Obsta
 
 bool DirectionalLight::calculateLightMesh(std::shared_ptr<cugl::physics2::ObstacleWorld> world) {
     
-    mx.clear();
-    my.clear();
-    f.clear();
+//    mx.clear();
+//    my.clear();
+//    f.clear();
     _lightVerts.clear();
     _lightIndx.clear();
+    
+    if (_dirty) {
+        calculateEndpoints(world);
+    }
 
     for (int i = 0; i < _numRays; i++) {
         
         m_index = i;
-        f.push_back(1.0f);
-        mx.push_back(_endX[i]);
-        my.push_back(_endY[i]);
+        f[i] = (1.0f);
+        mx[i] = (_endX[i]);
+        my[i] = (_endY[i]);
         
         world->rayCast(ray, Vec2(_startX[i],_startY[i]), Vec2(_endX[i],_endY[i]));
         
@@ -116,8 +118,8 @@ bool DirectionalLight::calculateEndpoints(std::shared_ptr<cugl::physics2::Obstac
         _startX[i] = stepX - xAxelOffset;
         _startY[i] = stepY - yAxelOffset;
         
-        _endX.push_back(stepX + xAxelOffset);
-        _endY.push_back(stepY + yAxelOffset);
+        _endX[i] = (stepX + xAxelOffset);
+        _endY[i] = (stepY + yAxelOffset);
     }
     
     return true;

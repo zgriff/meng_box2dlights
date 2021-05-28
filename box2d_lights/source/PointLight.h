@@ -55,37 +55,25 @@ namespace cugl {
  * Point light model used for a single point, 360 degree light source 
  */
 class PointLight : public PositionalLight {
-protected:
-
     
 public:
-#pragma mark -
-#pragma mark Getters and Setters
-    
-    
     
 #pragma mark -
-#pragma mark Constructors and Destructors
+#pragma mark Constructors
     
     /**
-     * Initializes a new light object of the given dimensions.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * Initializes a new point light object with the given parameters.
      *
      * @param  pos  Initial position in world coordinates
      * @param  numRays  Number of rays in the light
      * @param  radius  Radius of the point light circle
      *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @return  true if the light is initialized properly, false otherwise.
      */
     virtual bool init(const Vec2 pos, int numRays, float radius) override;
     
-    
     /**
-     * Returns a new point light object at the given point with no radius.
+     * Returns a new point light object with the given parameters.
      *
      * The scene graph is completely decoupled from the physics system.
      * The node does not have to be the same size as the physics body. We
@@ -96,7 +84,7 @@ public:
      * @param  numRays  Number of rays in the light
      * @param  radius  Radius of the point light circle
      *
-     * @return a new point light object at the given point with no radius.
+     * @return  a new point light object
      */
     static std::shared_ptr<PointLight> alloc(const Vec2 pos, int numRays, float radius) {
         std::shared_ptr<PointLight> result = std::make_shared<PointLight>();
@@ -104,48 +92,19 @@ public:
     }
     
     
-    /**
-     * Destroys this level, releasing all resources.
-     */
-    virtual ~PointLight(void);
-    
-    
-    void dispose();
-    
-    
-#pragma mark -
-#pragma mark Update
-    
-    /**
-     * Recalculates the light mesh from state and world changes
-     *
-     * This function needs to be called after altering information in this light object,
-     * e.g. color, numRays, etc. It requires a shared pointer to the ObstacleWorld
-     * for raycasting. Implementations of this method should NOT retain ownership of the
-     * Box2D world. That is a tight coupling that we should avoid.
-     *
-     * @param  delta  Initial position in world coordinates
-     * @param  world  Number of rays in the light
-     *
-     * @return a new point light object at the given point with no radius.
-     */
-    virtual void update(float delta, std::shared_ptr<cugl::physics2::ObstacleWorld> world) override;
-    
-    
 #pragma mark -
 #pragma mark Light Mesh Generation
     
     /**
-     * Recalculates the ray endpoints from state changes
+     * Recalculates the ray endpoints in event of state changes
      *
-     * This function needs to be called after altering information in this light object,
-     * e.g. color, numRays, etc. It requires a shared pointer to the ObstacleWorld
-     * for raycasting. Implementations of this method should NOT retain ownership of the
-     * Box2D world. That is a tight coupling that we should avoid.
+     * Any time informatiom such as numRays or radius is changed,
+     * the endpoints must be updated. Note: Endpoints are relative to the light's
+     * position, and changes in position are calculated in calculateLightMesh.
      *
      * @return true if successfully able to update ray endpoints
      */
-    bool calculateEndpoints();
+    virtual bool calculateEndpoints() override;
     
     
 };

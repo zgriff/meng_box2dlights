@@ -93,6 +93,7 @@ public:
  * the Box2d manual by Erin Catto (2011).
  */
 class Light {
+    
 protected:
     /** The default color for lights */
     const Color4 defaultColor = Color4::WHITE;
@@ -106,10 +107,6 @@ protected:
     int _posSnap;
     /** Cache of factor to snap position of image to physics body */
     unsigned long _posFact;
-    /** Number of decimal places to snap rotation of image to physics body */
-    int _angSnap;
-    /** Cache of factor to snap rotation of image to physics body */
-    unsigned long _angFact;
     
     /** The wireframe parent for debugging. */
     std::shared_ptr<cugl::scene2::SceneNode> _scene;
@@ -119,32 +116,27 @@ protected:
     Color4 _dcolor;
     /** A tag for debugging purposes */
     std::string _tag;
-    
-    std::shared_ptr<cugl::scene2::PolygonNode> _sceneNode;
-    
+        
     /** The color for this light  */
     Color4 _color;
-    /** The position of this light in world coordinates */
-    Vec2 _pos;
     
     /** The number of rays used in raycasting when calculating this light's mesh */
     int _numRays;
-    /** The number of vertices in this light's mesh */
-    int _numVerts;
         
     /** The iterator used during raycasting */
     int m_index = 0;
-    /** A vector populated with the x-values of  endpoints after raycasting */
-    std::vector<float> mx;
-    /** A vector populated with the y-values of  endpoints after raycasting */
-    std::vector<float> my;
-    /** A vector populated with the fraction of raycasted endpoint / designated endpoint */
-    std::vector<float> f;
-
-    /** A vector populated with the x-values of ray endpoints before raycasting */
-    std::vector<float>  _endX;
-    /** A vector populated with the y-values of ray endpoints before raycasting */
-    std::vector<float>  _endY;
+    
+    /** An array populated with the x-values of endpoints after raycasting */
+    float* mx;
+    /** An array populated with the y-values of endpoints after raycasting */
+    float* my;
+    /** An array populated with the fractions of raycasted endpoint / designated endpoint */
+    float* f;
+    
+    /** An array populated with the x-values of ray endpoints before raycasting */
+    float* _endX;
+    /** An array populated with the y-values of ray endpoints before raycasting */
+    float* _endY;
     
     /** A vector populated with each vertex that comprises the light mesh*/
     std::vector<LightVert> _lightVerts;
@@ -154,7 +146,6 @@ protected:
     /** Whether this light needs to recalculate it's start or endpoints */
     bool _dirty;
     
-
     
 #pragma mark -
 #pragma mark Scene Graph Internals
@@ -177,10 +168,10 @@ protected:
      virtual void updateDebug();
     
     
+public:
 
 #pragma mark -
 #pragma mark Constructors
-public:
     /**
      * Creates a new light object at the origin.
      *
@@ -200,8 +191,6 @@ public:
      * claims on scene graph nodes.
      */
     virtual ~Light();
-    
-    void dispose();
     
     /**
      * Initializes a new white light object at the origin with 100 rays.
@@ -233,7 +222,6 @@ public:
         return init(pos, numRays, defaultColor);
     }
     
-    
     /**
      * Initializes a new light object with the given parameters.
      *
@@ -249,7 +237,6 @@ public:
      * @return  true if the light is initialized properly, false otherwise.
      */
     virtual bool init(const Vec2 pos, const int numRays, const Color4 color);
-    
 
     
 #pragma mark -
@@ -282,7 +269,18 @@ public:
      *
      * @param  num  Number of rays to use
      */
-    void setNumRays(int num) {_numRays = num;}
+    void setNumRays(int num) {
+        _numRays = num;
+        
+        mx = new float[_numRays];
+        my = new float[_numRays];
+        f = new float[_numRays];
+        
+        _endX = new float[_numRays];
+        _endY = new float[_numRays];
+        
+        _dirty = true;
+    }
     
     /**
      * Returns the number of rays used to calculate the light mesh.
@@ -290,7 +288,6 @@ public:
      * @return  Number of rays used
      */
     int getNumRays() {return _numRays;}
-    
         
     /**
      * Returns a vector of vertices representing the light mesh.
@@ -325,16 +322,30 @@ public:
     /**
      * Generates the light mesh based on the type of light and world snapshot.
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * This method uses the position of the light and the calculated ray
+     * endpoints raycast in the provided world. If a ray hits a fixture, we record
+     * the new ray endpoint and the fraction of the magnitude of the original ray
+     * over the magnitude of the new ray. Implementations of this method should
+     * not retain ownership of the world as that is tight coupling.
      *
      * @param  world  The current ObstacleWorld of the game.
      *
      * @return  true if the vector of LightVerts  was successfully populated, false otherwise.
      */
     virtual bool calculateLightMesh(std::shared_ptr<cugl::physics2::ObstacleWorld> world) {
+        return false;
+    }
+    
+    /**
+     * Recalculates the ray endpoints in event of state changes
+     *
+     * Any time informatiom such as numRays or radius is changed,
+     * the endpoints must be updated. Note: Endpoints are relative to the light's
+     * position, and changes in position are calculated in calculateLightMesh.
+     *
+     * @return true if successfully able to update ray endpoints
+     */
+    virtual bool calculateEndpoints() {
         return false;
     }
     
@@ -400,7 +411,7 @@ public:
     virtual b2BodyType getBodyType() const {
         return (_body != nullptr ? _body->GetType() : _bodyinfo.type);
     }
-    
+
     /**
      * Sets the body type for Box2D physics
      *
@@ -505,147 +516,6 @@ public:
     }
     
     /**
-     * Returns the angle of rotation for this body (about the center).
-     *
-     * The value returned is in radians
-     *
-     * @return the angle of rotation for this body
-     */
-    virtual float getAngle() const {
-        return (_body != nullptr ? _body->GetAngle() : _bodyinfo.angle);
-    }
-    
-    /**
-     * Sets the angle of rotation for this body (about the center).
-     *
-     * @param value  the angle of rotation for this body (in radians)
-     */
-    virtual void setAngle(float value) {
-        if (_body != nullptr) {
-            _body->SetTransform(_body->GetPosition(),value);
-        } else {
-            _bodyinfo.angle = value;
-        }
-    }
-    
-    /**
-     * Returns the linear velocity for this physics body
-     *
-     * This method converts from a Box2D vector type to a CUGL vector type. This
-     * cuts down on the confusion between vector types.  It also means that
-     * changes to the returned vector will have no effect on this object.
-     *
-     * @return the linear velocity for this physics body
-     */
-    virtual Vec2 getLinearVelocity() const  {
-        if (_body != nullptr) {
-            return Vec2(_body->GetLinearVelocity().x,_body->GetLinearVelocity().y);
-        } else {
-            return Vec2(_bodyinfo.linearVelocity.x,_bodyinfo.linearVelocity.y);
-        }
-    }
-    
-    /**
-     * Sets the linear velocity for this physics body
-     *
-     * This method converts from a CUGL vector type to a Box2D vector type. This
-     * cuts down on the confusion between vector types.
-     *
-     * @param value  the linear velocity for this physics body
-     */
-    virtual void setLinearVelocity(const Vec2 value)  { setLinearVelocity(value.x,value.y); }
-    
-    /**
-     * Sets the linear velocity for this physics body
-     *
-     * @param x  the x-coordinate of the linear velocity
-     * @param y  the y-coordinate of the linear velocity
-     */
-    virtual void setLinearVelocity(float x, float y)  {
-        if (_body != nullptr) {
-            _body->SetLinearVelocity(b2Vec2(x,y));
-        } else {
-            _bodyinfo.linearVelocity.Set(x,y);
-        }
-    }
-    
-    /**
-     * Returns the x-velocity for this physics body
-     *
-     * @return the x-velocity for this physics body
-     */
-    virtual float getVX() const  {
-        if (_body != nullptr) {
-            return _body->GetLinearVelocity().x;
-        } else {
-            return _bodyinfo.linearVelocity.x;
-        }
-    }
-    
-    /**
-     * Sets the x-velocity for this physics body
-     *
-     * @param value  the x-velocity for this physics body
-     */
-    virtual void setVX(float value)  {
-        if (_body != nullptr) {
-            _body->SetLinearVelocity(b2Vec2(value,_body->GetLinearVelocity().y));
-        } else {
-            _bodyinfo.linearVelocity.x = value;
-        }
-    }
-    
-    /**
-     * Returns the y-velocity for this physics body
-     *
-     * @return the y-velocity for this physics body
-     */
-    virtual float getVY() const {
-        if (_body != nullptr) {
-            return _body->GetLinearVelocity().y;
-        } else {
-            return _bodyinfo.linearVelocity.y;
-        }
-    }
-    
-    /**
-     * Sets the y-velocity for this physics body
-     *
-     * @param value  the y-velocity for this physics body
-     */
-    virtual void setVY(float value)  {
-        if (_body != nullptr) {
-            _body->SetLinearVelocity(b2Vec2(_body->GetLinearVelocity().x,value));
-        } else {
-            _bodyinfo.linearVelocity.y = value;
-        }
-    }
-    
-    /**
-     * Returns the angular velocity for this physics body
-     *
-     * The rate of change is measured in radians per step
-     *
-     * @return the angular velocity for this physics body
-     */
-    virtual float getAngularVelocity() const  {
-        return (_body != nullptr ? _body->GetAngularVelocity() : _bodyinfo.angularVelocity);
-    }
-    
-    /**
-     * Sets the angular velocity for this physics body
-     *
-     * @param value the angular velocity for this physics body (in radians)
-     */
-    virtual void setAngularVelocity(float value)  {
-        if (_body != nullptr) {
-            _body->SetAngularVelocity(value);
-        } else {
-            _bodyinfo.angularVelocity = value;
-        }
-    }
-    
-    /**
      * Returns true if the body is active
      *
      * An inactive body not participate in collision or dynamics. This state is
@@ -676,274 +546,6 @@ public:
             _bodyinfo.active = value;
         }
     }
-    
-    /**
-     * Returns true if the body is awake
-     *
-     * An sleeping body is one that has come to rest and the physics engine has
-     * decided to stop simulating it to save CPU cycles. If a body is awake and
-     * collides with a sleeping body, then the sleeping body wakes up. Bodies
-     * will also wake up if a joint or contact attached to them is destroyed.
-     * You can also wake a body manually.
-     *
-     * @return true if the body is awake
-     */
-    virtual bool isAwake() const  {
-        return (_body != nullptr ? _body->IsAwake() : _bodyinfo.awake);
-    }
-    
-    /**
-     * Sets whether the body is awake
-     *
-     * An sleeping body is one that has come to rest and the physics engine has
-     * decided to stop simulating it to save CPU cycles. If a body is awake and
-     * collides with a sleeping body, then the sleeping body wakes up. Bodies
-     * will also wake up if a joint or contact attached to them is destroyed.
-     * You can also wake a body manually.
-     *
-     * @param value  whether the body is awake
-     */
-    virtual void setAwake(bool value)  {
-        if (_body != nullptr) {
-            _body->SetAwake(value);
-        } else {
-            _bodyinfo.awake = value;
-        }
-    }
-    
-    /**
-     * Returns false if this body should never fall asleep
-     *
-     * An sleeping body is one that has come to rest and the physics engine has
-     * decided to stop simulating it to save CPU cycles. If a body is awake and
-     * collides with a sleeping body, then the sleeping body wakes up. Bodies
-     * will also wake up if a joint or contact attached to them is destroyed.
-     * You can also wake a body manually.
-     *
-     * @return false if this body should never fall asleep
-     */
-    virtual bool isSleepingAllowed() const  {
-        return (_body != nullptr ? _body->IsSleepingAllowed() : _bodyinfo.allowSleep);
-    }
-    
-    /**
-     * Sets whether the body should ever fall asleep
-     *
-     * An sleeping body is one that has come to rest and the physics engine has
-     * decided to stop simulating it to save CPU cycles. If a body is awake and
-     * collides with a sleeping body, then the sleeping body wakes up. Bodies
-     * will also wake up if a joint or contact attached to them is destroyed.
-     * You can also wake a body manually.
-     *
-     * @param value  whether the body should ever fall asleep
-     */
-    virtual void setSleepingAllowed(bool value)  {
-        if (_body != nullptr) {
-            _body->SetSleepingAllowed(value);
-        } else {
-            _bodyinfo.allowSleep = value;
-        }
-    }
-    
-    /**
-     * Returns true if this body is a bullet
-     *
-     * By default, Box2D uses continuous collision detection (CCD) to prevent
-     * dynamic bodies from tunneling through static bodies. Normally CCD is not
-     * used between dynamic bodies. This is done to keep performance reasonable.
-     * In some game scenarios you need dynamic bodies to use CCD. For example,
-     * you may want to shoot a high speed bullet at a stack of dynamic bricks.
-     * Without CCD, the bullet might tunnel through the bricks.
-     *
-     * Fast moving objects in Box2D can be labeled as bullets. Bullets will
-     * perform CCD with both static and dynamic bodies. You should decide what
-     * bodies should be bullets based on your game design.
-     *
-     * @return true if this body is a bullet
-     */
-    virtual bool isBullet() const  {
-        return (_body != nullptr ? _body->IsBullet() : _bodyinfo.bullet);
-    }
-    
-    /**
-     * Sets whether this body is a bullet
-     *
-     * By default, Box2D uses continuous collision detection (CCD) to prevent
-     * dynamic bodies from tunneling through static bodies. Normally CCD is not
-     * used between dynamic bodies. This is done to keep performance reasonable.
-     * In some game scenarios you need dynamic bodies to use CCD. For example,
-     * you may want to shoot a high speed bullet at a stack of dynamic bricks.
-     * Without CCD, the bullet might tunnel through the bricks.
-     *
-     * Fast moving objects in Box2D can be labeled as bullets. Bullets will
-     * perform CCD with both static and dynamic bodies. You should decide what
-     * bodies should be bullets based on your game design.
-     *
-     * @param value  whether this body is a bullet
-     */
-    virtual void setBullet(bool value)  {
-        if (_body != nullptr) {
-            _body->SetBullet(value);
-        } else {
-            _bodyinfo.bullet = value;
-        }
-    }
-    
-    /**
-     * Returns true if this body be prevented from rotating
-     *
-     * This is very useful for characters that should remain upright.
-     *
-     * @return true if this body be prevented from rotating
-     */
-    virtual bool isFixedRotation() const  {
-        return (_body != nullptr ? _body->IsFixedRotation() : _bodyinfo.fixedRotation);
-    }
-    
-    /**
-     * Sets whether this body be prevented from rotating
-     *
-     * This is very useful for characters that should remain upright.
-     *
-     * @param value  whether this body be prevented from rotating
-     */
-    virtual void setFixedRotation(bool value)  {
-        if (_body != nullptr) {
-            _body->SetFixedRotation(value);
-        } else {
-            _bodyinfo.fixedRotation = value;
-        }
-    }
-    
-    /**
-     * Returns the gravity scale to apply to this body
-     *
-     * This allows isolated objects to float.  Be careful with this, since
-     * increased gravity can decrease stability.
-     *
-     * @return the gravity scale to apply to this body
-     */
-    virtual float getGravityScale() const  {
-        return (_body != nullptr ? _body->GetGravityScale() : _bodyinfo.gravityScale);
-    }
-    
-    /**
-     * Sets the gravity scale to apply to this body
-     *
-     * This allows isolated objects to float.  Be careful with this, since
-     * increased gravity can decrease stability.
-     *
-     * @param value  the gravity scale to apply to this body
-     */
-    virtual void setGravityScale(float value)  {
-        if (_body != nullptr) {
-            _body->SetGravityScale(value);
-        } else {
-            _bodyinfo.gravityScale = value;
-        }
-    }
-    
-    /**
-     * Returns the linear damping for this body.
-     *
-     * Linear damping is use to reduce the linear velocity. Damping is different
-     * than friction because friction only occurs with contact. Damping is not a
-     * replacement for friction and the two effects should be used together.
-     *
-     * Damping parameters should be between 0 and infinity, with 0 meaning no
-     * damping, and infinity meaning full damping. Normally you will use a
-     * damping value between 0 and 0.1. Most people avoid linear damping because
-     * it makes bodies look floaty.
-     *
-     * @return the linear damping for this body.
-     */
-    virtual float getLinearDamping() const  {
-        return (_body != nullptr ? _body->GetLinearDamping() : _bodyinfo.linearDamping);
-    }
-    
-    /**
-     * Sets the linear damping for this body.
-     *
-     * Linear damping is use to reduce the linear velocity. Damping is different
-     * than friction because friction only occurs with contact. Damping is not a
-     * replacement for friction and the two effects should be used together.
-     *
-     * Damping parameters should be between 0 and infinity, with 0 meaning no
-     * damping, and infinity meaning full damping. Normally you will use a
-     * damping value between 0 and 0.1. Most people avoid linear damping because
-     * it makes bodies look floaty.
-     *
-     * @param value  the linear damping for this body.
-     */
-    virtual void setLinearDamping(float value)  {
-        if (_body != nullptr) {
-            _body->SetLinearDamping(value);
-        } else {
-            _bodyinfo.linearDamping = value;
-        }
-    }
-    
-    /**
-     * Returns the angular damping for this body.
-     *
-     * Angular damping is use to reduce the angular velocity. Damping is
-     * different than friction because friction only occurs with contact.
-     * Damping is not a replacement for friction and the two effects should be
-     * used together.
-     *
-     * Damping parameters should be between 0 and infinity, with 0 meaning no
-     * damping, and infinity meaning full damping. Normally you will use a
-     * damping value between 0 and 0.1.
-     *
-     * @return the angular damping for this body.
-     */
-    virtual float getAngularDamping() const  {
-        return (_body != nullptr ? _body->GetAngularDamping() : _bodyinfo.angularDamping);
-    }
-    
-    /**
-     * Sets the angular damping for this body.
-     *
-     * Angular damping is use to reduce the angular velocity. Damping is
-     * different than friction because friction only occurs with contact.
-     * Damping is not a replacement for friction and the two effects should be
-     * used together.
-     *
-     * Damping parameters should be between 0 and infinity, with 0 meaning no
-     * damping, and infinity meaning full damping. Normally you will use a
-     * damping value between 0 and 0.1.
-     *
-     * @param value  the angular damping for this body.
-     */
-    virtual void setAngularDamping(float value)  {
-        if (_body != nullptr) {
-            _body->SetAngularDamping(value);
-        } else {
-            _bodyinfo.angularDamping = value;
-        }
-    }
-    
-    /**
-     * Copies the state from the given body to the body def.
-     *
-     * This is important if you want to save the state of the body before
-     * removing it from the world.
-     */
-    void setBodyState(const b2Body& body);
-    
-    
-#pragma mark -
-#pragma mark Physics Methods
-    /**
-     * Returns a (weak) reference to Box2D body for this obstacle.
-     *
-     * You use this body to add joints and apply forces. As a weak reference,
-     * this physics obstacle does not transfer ownership of this body.  In
-     * addition, the value may be a nullptr.
-     *
-     * @return a (weak) reference to Box2D body for this obstacle.
-     */
-    virtual b2Body* getBody() { return _body; }
     
     
 #pragma mark -

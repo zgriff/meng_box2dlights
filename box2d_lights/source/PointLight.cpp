@@ -12,38 +12,19 @@
 
 using namespace cugl::b2dlights;
 
-
-PointLight::~PointLight(void) {
-    _sceneNode = nullptr;
-}
-
-
 #pragma mark -
 #pragma mark Constructors
-
 
 bool PointLight::init(const Vec2 pos, int numRays, float radius) {
     
     PositionalLight::init(pos, numRays, radius);
-    
-    calculateEndpoints();
-    
+        
     return true;
 }
 
 
-void PointLight::update(float delta, std::shared_ptr<cugl::physics2::ObstacleWorld> world) {
-    
-    if (_dirty) calculateEndpoints();
-    
-    _dirty = false;
-    
-    calculateLightMesh(world);
-}
-
-
 #pragma mark -
-#pragma mark Light Querying
+#pragma mark Light Mesh Generation
 
 
 bool PointLight::calculateEndpoints() {
@@ -61,8 +42,8 @@ bool PointLight::calculateEndpoints() {
         sinarr[i] = sin(angle);
         cosarr[i] = cos(angle);
         
-        _endX.push_back(_radius * cosarr[i]);
-        _endY.push_back(_radius * sinarr[i]);
+        _endX[i] = (_radius * cosarr[i]);
+        _endY[i] = (_radius * sinarr[i]);
     }
     
     return true;

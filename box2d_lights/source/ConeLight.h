@@ -66,38 +66,24 @@ protected:
     
     
 public:
+    
 #pragma mark -
 #pragma mark Getters and Setters
     
     /**
-     * Returns a new point light object at the given point with no radius.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
-     *
-     * @param  pos  Initial position in world coordinates
-     * @param  numRays  Number of rays in the light
-     * @param  radius  Radius of the point light circle
+     * Returns the direction of this light's rays in degrees.
      *
      * @return a new point light object at the given point with no radius.
      */
     float getDirection() {return _direction;}
     
     /**
-     * Returns a new point light object at the given point with no radius.
+     * Sets the direction of the light rays to the specified degree.
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * The update method must be called after this method in order
+     * for any changes to take effect.
      *
-     * @param  pos  Initial position in world coordinates
-     * @param  numRays  Number of rays in the light
-     * @param  radius  Radius of the point light circle
-     *
-     * @return a new point light object at the given point with no radius.
+     * @param  dir  Direction of light rays (in degrees)
      */
     void setDirection(float dir) {
         _direction = dir;
@@ -105,69 +91,49 @@ public:
     }
     
     /**
-     * Returns a new point light object at the given point with no radius.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
-     *
-     * @param  pos  Initial position in world coordinates
-     * @param  numRays  Number of rays in the light
-     * @param  radius  Radius of the point light circle
+     * Returns the size of this light cone in degrees.
      *
      * @return a new point light object at the given point with no radius.
      */
     float getConeDegree() {return _coneDegree;}
     
     /**
-     * Returns a new point light object at the given point with no radius.
+     * Sets the size of the light cone to the specified degree.
      *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * A light cone cannot be smaller than 0.01f degrees.
+     * The update method must be called after this method in order
+     * for any changes to take effect.
      *
-     * @param  pos  Initial position in world coordinates
-     * @param  numRays  Number of rays in the light
-     * @param  radius  Radius of the point light circle
-     *
-     * @return a new point light object at the given point with no radius.
+     * @param  dir  size of cone (in degrees)
      */
-    void setConeDegree(float dir) {
-        if (dir > 0.01f) {
-            _direction = dir;
+    void setConeDegree(float deg) {
+        if (deg > 0.01f) {
+            _coneDegree = deg;
         } else {
-            _direction = 0.01f;
+            _coneDegree = 0.01f;
         }
         _dirty = true;
     }
     
     
-    
-    
 #pragma mark -
-#pragma mark Construct Destruct
+#pragma mark Constructors
     
     /**
-     * Initializes a new wheel object of the given dimensions.
-     *_indxSize    GLuint    150
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
+     * Initializes a new cone light object with the given parameters.
      *
      * @param  pos  Initial position in world coordinates
      * @param  numRays  Number of rays in the light
      * @param  radius  Radius of the point light circle
+     * @param  direction  Radius of the point light circle
+     * @param  degree  Radius of the point light circle
      *
-     * @return  true if the obstacle is initialized properly, false otherwise.
+     * @return true if the obstacle is initialized properly, false otherwise.
      */
     virtual bool init(const Vec2 pos, int numRays, float radius, float direction, float degreeee);
     
-    
     /**
-     * Returns a new cone light object at the given point with no radius.
+     * Returns a new cone light object with the given parameters.
      *
      * The scene graph is completely decoupled from the physics system.
      * The node does not have to be the same size as the physics body. We
@@ -180,51 +146,26 @@ public:
      * @param  direction  Radius of the point light circle
      * @param  degree  Radius of the point light circle
      *
-     * @return a new point light object at the given point with no radius.
+     * @return a new cone light object.
      */
     static std::shared_ptr<ConeLight> alloc(const Vec2 pos, int numRays, float radius, float direction, float degreee) {
         std::shared_ptr<ConeLight> result = std::make_shared<ConeLight>();
         return (result->init(pos, numRays, radius, direction, degreee) ? result : nullptr);
     }
     
-    /**
-     * Returns a new point light object at the given point with no radius.
-     *
-     * The scene graph is completely decoupled from the physics system.
-     * The node does not have to be the same size as the physics body. We
-     * only guarantee that the scene graph node is positioned correctly
-     * according to the drawing scale.
-     *
-     * @param  pos  Initial position in world coordinates
-     * @param  numRays  Number of rays in the light
-     * @param  radius  Radius of the point light circle
-     *
-     * @return a new point light object at the given point with no radius.
-     */
-    bool calculateEndpoints();
+#pragma mark -
+#pragma mark Light Mesh Generation
     
     /**
-     * Recalculates the light mesh from state and world changes
+     * Recalculates the ray endpoints from state changes
      *
-     * This function needs to be called after altering information in this light object,
-     * e.g. color, numRays, etc. It requires a shared pointer to the ObstacleWorld
-     * for raycasting. Implementations of this method should NOT retain ownership
-     * of the world. That is a tight coupling that we should avoid.
+     * Any time informatiom such as numRays or radius is changed,
+     * the endpoints must be updated. Note: Endpoints are relative to the light's
+     * position, and changes in position are calculated in calculateLightMesh.
      *
-     * @param  delta  Initial position in world coordinates
-     * @param  world  Number of rays in the light
-     *
-     * @return a new point light object at the given point with no radius.
+     * @return true if successfully able to update ray endpoints
      */
-    virtual void update(float delta, std::shared_ptr<cugl::physics2::ObstacleWorld> world) override;
-
-    
-    /**
-     * Destroys this light, releasing all resources.
-     */
-    virtual ~ConeLight(void);
-    
-    void dispose();
+    virtual bool calculateEndpoints() override;
     
     
 };

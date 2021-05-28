@@ -125,7 +125,7 @@ bool RayHandler::addConeLight(Vec2 vec, int numRays, float radius, float directi
 // a directional light to list of lights
 //TODO: change so vert data add is in separate function to be updated each frame
 bool RayHandler::addDirectionalLight(Vec2 vec, int numRays, float direction) {
-    auto light = DirectionalLight::alloc(numRays, direction, _world);
+    auto light = DirectionalLight::alloc(numRays, direction);
 //    light->setWorld(_world);
     light->calculateLightMesh(_world);
     
